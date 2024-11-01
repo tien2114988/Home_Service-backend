@@ -39,7 +39,7 @@ payOS:
 
 vietQr:
   clientId :
-  apiKey : 
+  apiKey :
 
 upload:
   dir: /var/www/uploads
