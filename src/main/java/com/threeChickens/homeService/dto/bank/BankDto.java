@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BankDto {
-    private String id;
-    private String name;
+//    private String id;
+//    private String name;
     private String logo;
-    private String code;
+//    private String code;
     private String bin;
-    private String fiServiceId;
+//    private String fiServiceId;
     private String fiName;
-    private String fiFullName;
-    private String color;
+//    private String fiFullName;
+//    private String color;
 }

@@ -18,12 +18,12 @@ public class Rate {
 
     private String comment;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "post_id", nullable=false)
     private Post post;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "freelancer_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "freelancer_id", nullable=false)
     private User freelancer;
 
     @ManyToOne

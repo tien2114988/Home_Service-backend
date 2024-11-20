@@ -1,8 +1,10 @@
 package com.threeChickens.homeService.entity;
 
+import com.threeChickens.homeService.enums.WorkScheduleStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -16,9 +18,10 @@ public class WorkSchedule {
     @GeneratedValue(strategy= GenerationType.UUID)
     private String id;
 
-    private Date date;
+    private LocalDate date;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private WorkScheduleStatus status;
 
     private boolean deleted;
 

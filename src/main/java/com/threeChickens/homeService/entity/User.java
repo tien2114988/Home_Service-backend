@@ -1,10 +1,18 @@
 package com.threeChickens.homeService.entity;
 
+import com.threeChickens.homeService.enums.AccountType;
+import com.threeChickens.homeService.enums.Gender;
 import com.threeChickens.homeService.enums.UserRole;
+import com.threeChickens.homeService.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -13,9 +21,13 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class User {
     @Id
-    @GeneratedValue(strategy= GenerationType.UUID)
+    @GeneratedValue(generator = "user-generator")
+    @GenericGenerator(name = "user-generator",
+            parameters = @org.hibernate.annotations.Parameter(name = "prefix", value = "USER"),
+            strategy = "com.threeChickens.homeService.utils.IdGeneratorUtil")
     private String id;
 
     private String avatar;
@@ -24,6 +36,9 @@ public class User {
 
     private String password;
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
@@ -31,9 +46,11 @@ public class User {
 
     private String name;
 
-    private char gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 
     private long balance;
 
@@ -41,32 +58,37 @@ public class User {
 
     private int reputationPoint;
 
+    private String googleSub;
+
+    @Enumerated(EnumType.STRING)
+    private AccountType accountType;
+
     private boolean deleted;
 
     @OneToMany(mappedBy="user")
-    private Set<Address> addresses;
+    private Set<Address> addresses = new HashSet<>();;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private BankAccount bankAccount;
 
     @OneToMany(mappedBy="customer")
-    private Set<Post> posts;
+    private Set<Post> posts = new HashSet<>();;
 
     @OneToMany(mappedBy="freelancer")
-    private Set<TestResult> testResults;
+    private Set<TestResult> testResults = new HashSet<>();;
 
     @ManyToMany
-    private Set<User> notifications;
+    private Set<Notification> notifications = new HashSet<>();;
 
-    @OneToOne(mappedBy = "freelancer")
-    private FreelancerGetPost freelancerGetPost;
+    @OneToMany(mappedBy = "freelancer")
+    private Set<FreelancerTakePost> freelancerTakePosts = new HashSet<>();;
 
-    @OneToOne(mappedBy = "freelancer")
-    private FreelancerWorkService freelancerWorkService;
+    @OneToMany(mappedBy = "freelancer")
+    private Set<FreelancerWorkService> freelancerWorkServices = new HashSet<>();;
 
-    @OneToOne(mappedBy = "freelancer")
-    private Rate receivedRate;
+    @OneToMany(mappedBy = "freelancer")
+    private Set<Rate> receivedRates = new HashSet<>();
 
     @OneToMany(mappedBy="customer")
-    private Set<Rate> rates;
+    private Set<Rate> rates = new HashSet<>();;
 }

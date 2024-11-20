@@ -1,4 +1,4 @@
-package com.threeChickens.homeService.dto.bank;
+package com.threeChickens.homeService.dto.province;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BankAccountDto {
-    private int bin;
-    private String accountNumber;
+public class WardDto {
+    private int code;
+    private String name;
 }

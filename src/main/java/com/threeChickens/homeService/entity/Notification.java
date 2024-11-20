@@ -3,9 +3,13 @@ package com.threeChickens.homeService.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -14,14 +18,14 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Notification {
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)
     private String id;
 
-    @CreationTimestamp
-    @Column(updatable = false, nullable = false)
-    private ZonedDateTime createdAt = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     private String title;
 
@@ -36,5 +40,5 @@ public class Notification {
     private Post post;
 
     @ManyToMany
-    private Set<User> users;
+    private Set<User> users = new HashSet<>();;
 }

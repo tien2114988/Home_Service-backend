@@ -2,6 +2,7 @@ package com.threeChickens.homeService.service;
 
 import com.threeChickens.homeService.dto.auth.VerifyOtpDto;
 import com.threeChickens.homeService.entity.Otp;
+import com.threeChickens.homeService.enums.AccountType;
 import com.threeChickens.homeService.exception.AppException;
 import com.threeChickens.homeService.exception.StatusCode;
 import com.threeChickens.homeService.repository.OtpRepository;
@@ -41,7 +42,7 @@ public class OtpService {
         String otp = generateOtp();
         Otp otpEntity = Otp.builder().email(email).otp(otp).verified(false).build();
 
-        boolean isSignUp = !userService.existUserByEmail(email, true);
+        boolean isSignUp = !userService.existUserByEmail(email, AccountType.EMAIL,true);
 
         if(isSignUp){
             otpRepository.deleteAllByEmail(email);
@@ -62,7 +63,7 @@ public class OtpService {
             throw new AppException(StatusCode.EXPIRED_OTP);
         }
 
-        boolean isSignUp = !userService.existUserByEmail(verifyOtpDto.getEmail(), true);
+        boolean isSignUp = !userService.existUserByEmail(verifyOtpDto.getEmail(), AccountType.EMAIL,true);
 
         if(isSignUp){
             emailHasSignUp(verifyOtpDto.getEmail());

@@ -3,6 +3,7 @@ package com.threeChickens.homeService.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -26,9 +27,9 @@ public class Question {
     @JoinColumn(name="test_id", nullable=false)
     private Test test;
 
-    @OneToOne(mappedBy = "question")
-    private AnswerForQuestion answerForQuestion;
+    @OneToMany(mappedBy = "question")
+    private Set<AnswerForQuestion> answerForQuestions = new HashSet<>();;
 
     @OneToMany(mappedBy="question")
-    private Set<Choice> choices;
+    private Set<Choice> choices = new HashSet<>();;
 }

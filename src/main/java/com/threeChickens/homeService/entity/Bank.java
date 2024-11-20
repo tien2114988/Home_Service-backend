@@ -3,6 +3,7 @@ package com.threeChickens.homeService.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -35,5 +36,5 @@ public class Bank {
     private String type;
 
     @OneToMany(mappedBy="bank")
-    private Set<BankAccount> bankAccounts;
+    private Set<BankAccount> bankAccounts = new HashSet<>();;
 }

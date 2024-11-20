@@ -2,13 +2,19 @@ package com.threeChickens.homeService.service;
 
 
 import com.nimbusds.jose.JOSEException;
+import com.threeChickens.homeService.dto.admin.AdminDto;
 import com.threeChickens.homeService.dto.auth.*;
-import com.threeChickens.homeService.dto.user.UserDto;
+import com.threeChickens.homeService.dto.googleAuth.GoogleLoginDto;
+import com.threeChickens.homeService.dto.googleAuth.GoogleSignupDto;
+import com.threeChickens.homeService.dto.googleAuth.UserInfoDto;
+import com.threeChickens.homeService.dto.user.GetUserDto;
+import com.threeChickens.homeService.enums.AccountType;
 import com.threeChickens.homeService.exception.AppException;
-import jakarta.mail.MessagingException;
+import com.threeChickens.homeService.utils.GoogleAuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 
 @Service
@@ -22,16 +28,19 @@ public class AuthService{
     @Autowired
     private OtpService otpService;
 
+    @Autowired
+    private GoogleAuthUtil googleAuthUtil;
+
     public void verifyOtp(VerifyOtpDto otpDto) {
         otpService.verifyOtp(otpDto);
     }
 
-    public void signUp(SignUpDto signUpDto){
-        userService.existUserByEmail(signUpDto.getEmail(), false);
+    public GetUserDto signUp(SignUpDto signUpDto){
+        userService.existUserByEmail(signUpDto.getEmail(), AccountType.EMAIL, false);
 
         otpService.verifyOtpForAuth(signUpDto.getEmail(), signUpDto.getOtp());
 
-        userService.createUser(signUpDto);
+        return userService.createUser(signUpDto);
     }
 
     public void sendOtp(OtpDto otpDto) throws AppException {
@@ -39,13 +48,13 @@ public class AuthService{
         if(otpDto.getRole()!=null){
             userService.existUserByEmailAndRole(otpDto);
         }else{
-            userService.existUserByEmail(email, false);
+            userService.existUserByEmail(email, AccountType.EMAIL, false);
             otpService.emailHasSignUp(email);
         }
         otpService.sendOtp(email);
     }
 
-    public UserDto logIn(LoginDto loginDto) {
+    public GetUserDto logIn(LoginDto loginDto) {
         otpService.verifyOtpForAuth(loginDto.getEmail(), loginDto.getOtp());
         return userService.getUserByEmailAndPassword(loginDto);
     }
@@ -54,9 +63,29 @@ public class AuthService{
         return adminService.checkAdmin(adminLoginDto);
     }
 
-    public UserDto verifyJwt(String jwt) throws ParseException, JOSEException {
+    public GetUserDto verifyJwt(String jwt) throws ParseException, JOSEException {
         return userService.getUserByJwt(jwt);
     }
+
+    public AdminDto verifyJwtForAdmin(String jwt) throws ParseException, JOSEException {
+        return adminService.getAdminByJwt(jwt);
+    }
+
+    public GoogleLinkDto getGoogleAuthLink(String redirectUri){
+        String link = googleAuthUtil.getLink(redirectUri);
+        return GoogleLinkDto.builder().url(link).build();
+    }
+
+    public GetUserDto logInWithGoogle(GoogleLoginDto googleLoginDto) throws UnsupportedEncodingException {
+        UserInfoDto userInfoDto =  googleAuthUtil.getUserInfo(googleLoginDto.getCode(), googleLoginDto.getRedirectUri());
+        return userService.getUserByGoogle(userInfoDto);
+    }
+
+    public GetUserDto signUpWithGoogle(GoogleSignupDto googleSignupDto){
+        return userService.createUserByGoogle(googleSignupDto);
+    }
+
+
 
 //    public void logout(String token) throws ParseException, JOSEException {
 //        SignedJWT signedJWT = jwtUtil.verifyToken(token);

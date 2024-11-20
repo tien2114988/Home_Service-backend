@@ -3,6 +3,7 @@ package com.threeChickens.homeService.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -25,6 +26,6 @@ public class BankCredential {
     private boolean deleted;
 
     @OneToMany(mappedBy="bankCredential")
-    private Set<BankAccount> bankAccounts;
+    private Set<BankAccount> bankAccounts = new HashSet<>();;
 }
 

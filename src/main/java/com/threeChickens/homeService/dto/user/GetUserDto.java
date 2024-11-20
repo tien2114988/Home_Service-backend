@@ -1,11 +1,14 @@
 package com.threeChickens.homeService.dto.user;
 
-import com.threeChickens.homeService.dto.bank.BankAccountDto;
+import com.threeChickens.homeService.dto.address.GetAddressDto;
+import com.threeChickens.homeService.dto.bank.CreateBankAccountDto;
+import com.threeChickens.homeService.dto.bank.GetBankAccountDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -13,21 +16,23 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class GetUserDto {
+    private String id;
     private String jwt;
     private String avatar;
     private String email;
     private String role;
     private Date dob;
     private String name;
-    private char gender;
+    private String gender;
     private String status;
     private long balance;
     private String phoneNumber;
     private int reputationPoint;
-
-    private Set<AddressDto> addresses;
-    private BankAccountDto bankAccount;
+    private LocalDateTime createdAt;
+    private String googleSub;
+    private Set<GetAddressDto> addresses;
+    private GetBankAccountDto bankAccount;
 
 //    private Set<Post> posts;
 //    private Set<TestResult> testResults;

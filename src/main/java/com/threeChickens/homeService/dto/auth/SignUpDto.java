@@ -17,8 +17,11 @@ public class SignUpDto {
     @Email
     private String email;
 
-    @NotNull(message = "Password must not be null")
+    @NotNull(message = "Role must not be null")
     private String role;
+
+    @NotNull(message = "Name must not be null")
+    private String name;
 
     @NotNull(message = "Password must not be null")
     @PasswordConstraint

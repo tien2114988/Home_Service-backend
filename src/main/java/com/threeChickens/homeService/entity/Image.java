@@ -3,6 +3,9 @@ package com.threeChickens.homeService.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -18,6 +21,6 @@ public class Image {
 
     private boolean deleted;
 
-    @OneToOne(mappedBy = "image")
-    private FreelancerWorkService freelancerWorkService;
+    @OneToMany(mappedBy = "image")
+    private Set<FreelancerWorkService> freelancerWorkServices = new HashSet<>();;
 }

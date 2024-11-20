@@ -1,13 +1,19 @@
 package com.threeChickens.homeService.entity;
 
+import com.threeChickens.homeService.enums.PackageName;
+import com.threeChickens.homeService.enums.PaymentType;
+import com.threeChickens.homeService.enums.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Time;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -16,17 +22,20 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Post {
     @Id
-    @GeneratedValue(strategy= GenerationType.UUID)
+    @GeneratedValue(generator = "post-generator")
+    @GenericGenerator(name = "post-generator",
+            parameters = @Parameter(name = "prefix", value = "POST"),
+            strategy = "com.threeChickens.homeService.utils.IdGeneratorUtil")
     private String id;
 
-    @CreationTimestamp
-    @Column(updatable = false, nullable = false)
-    private ZonedDateTime createdAt = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    private ZonedDateTime updatedAt = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     private String customerNote;
 
@@ -36,9 +45,11 @@ public class Post {
 
     private long price;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private PostStatus status;
 
-    private String paymentType;
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
 
     private boolean isPayment;
 
@@ -46,7 +57,8 @@ public class Post {
 
     private int numOfFreelancer;
 
-    private String packageName;
+    @Enumerated(EnumType.STRING)
+    private PackageName packageName;
 
     private int totalWorkDay;
 
@@ -56,29 +68,29 @@ public class Post {
 
     private boolean deleted;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="customer_id", nullable=false)
     private User customer;
 
-    @ManyToOne
-    @JoinColumn(name="service_id", nullable=false)
-    private Service service;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="work_id", nullable=false)
+    private Work work;
 
-    @OneToMany(mappedBy="post")
-    private Set<WorkSchedule> workSchedules;
+    @OneToMany(mappedBy="post", cascade = CascadeType.ALL)
+    private Set<WorkSchedule> workSchedules = new HashSet<>();;
 
-    @OneToMany(mappedBy="post")
-    private Set<Notification> notifications;
+    @OneToMany(mappedBy="post", cascade = CascadeType.ALL)
+    private Set<Notification> notifications = new HashSet<>();;
 
-    @OneToOne(mappedBy = "post")
-    private FreelancerGetPost freelancerGetPost;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private Set<FreelancerTakePost> freelancerTakePosts = new HashSet<>();
 
-    @OneToOne(mappedBy = "post")
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL)
     private HouseCleaning houseCleaning;
 
-    @OneToOne(mappedBy = "post")
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL)
     private Babysitting babysitting;
 
-    @OneToOne(mappedBy = "post")
-    private Rate rate;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private Set<Rate> rates = new HashSet<>();
 }

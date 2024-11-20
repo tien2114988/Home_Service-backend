@@ -1,5 +1,6 @@
 package com.threeChickens.homeService.entity;
 
+import com.threeChickens.homeService.enums.FreelancerWorkStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,19 +15,20 @@ public class FreelancerWorkService {
     @GeneratedValue(strategy= GenerationType.UUID)
     private String id;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private FreelancerWorkStatus status;
 
     private String description;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "freelancer_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "freelancer_id", nullable=false)
     private User freelancer;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "image_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
     private Image image;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "service_id", referencedColumnName = "id")
-    private Service service;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "work_id", nullable=false)
+    private Work work;
 }

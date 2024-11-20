@@ -18,13 +18,7 @@ public class Address {
 
     private String phoneNumber;
 
-    private String street;
-
-    private String ward;
-
-    private String district;
-
-    private String province;
+    private String detail;
 
     private float latitude;
 
@@ -37,4 +31,10 @@ public class Address {
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
     private User user;
+
+    @ManyToOne
+    @JoinColumns({@JoinColumn(name = "district_code", referencedColumnName = "district_code"),
+            @JoinColumn(name = "province_code", referencedColumnName = "province_code"),
+            @JoinColumn(name = "ward_code", referencedColumnName = "code")})
+    private Ward ward;
 }

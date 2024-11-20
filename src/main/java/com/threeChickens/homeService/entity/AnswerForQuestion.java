@@ -16,11 +16,11 @@ public class AnswerForQuestion {
 
     private String content;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "question_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "question_id", nullable=false)
     private Question question;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "test_result_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "test_result_id", nullable=false)
     private TestResult testResult;
 }

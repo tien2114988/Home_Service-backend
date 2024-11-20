@@ -1,7 +1,5 @@
-package com.threeChickens.homeService.dto.user;
+package com.threeChickens.homeService.dto.address;
 
-import com.threeChickens.homeService.entity.User;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,14 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddressDto {
-    private String id;
+public class CreateAddressDto {
+    private Integer provinceCode;
+    private Integer districtCode;
+    private Integer wardCode;
     private String customerName;
     private String phoneNumber;
-    private String street;
-    private String ward;
-    private String district;
-    private String province;
+    private String detail;
     private float latitude;
     private float longitude;
     private boolean isDefault;

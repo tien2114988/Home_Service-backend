@@ -1,7 +1,7 @@
 package com.threeChickens.homeService.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.threeChickens.homeService.dto.bank.BankAccountDto;
+import com.threeChickens.homeService.dto.bank.CreateBankAccountDto;
 import com.threeChickens.homeService.dto.bank.BankDto;
 import com.threeChickens.homeService.dto.bankHub.GetFiServiceDto;
 import com.threeChickens.homeService.entity.Bank;
@@ -14,7 +14,6 @@ import com.threeChickens.homeService.repository.BankRepository;
 import com.threeChickens.homeService.utils.BankHubUtil;
 import com.threeChickens.homeService.utils.VietQrUtil;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,7 +81,7 @@ public class BankService {
                 Bank bank = modelMapper.map(fiServiceDto, Bank.class);
                 bank.setColor(color);
                 bank.setBin(fiServiceDto.getFiBin());
-                bank.setFiName(fiServiceDto.getId());
+                bank.setFiServiceId(fiServiceDto.getId());
                 banks.add(bank);
             });
             bankRepository.saveAll(banks);
@@ -96,17 +95,17 @@ public class BankService {
         ).toList();
     }
 
-    public String getBankAccountName(BankAccountDto bankAccountDto) throws Exception {
-        return vietQrUtil.lookup(bankAccountDto);
+    public String getBankAccountName(CreateBankAccountDto createBankAccountDto) throws Exception {
+        return vietQrUtil.lookup(createBankAccountDto);
     }
 
-    public void updateBankAccountForUser(User user, BankAccountDto bankAccountDto) throws Exception {
+    public void updateBankAccountForUser(User user, CreateBankAccountDto createBankAccountDto) throws Exception {
         BankAccount bankAccount = user.getBankAccount();
 
-        Bank bank = bankRepository.findFirstByBin(bankAccountDto.getBin()+"").orElseThrow(
+        Bank bank = bankRepository.findFirstByBin(createBankAccountDto.getBin()+"").orElseThrow(
                 () -> new AppException(StatusCode.BANK_NOT_FOUND)
         );
-        String bankAccountName = vietQrUtil.lookup(bankAccountDto);
+        String bankAccountName = vietQrUtil.lookup(createBankAccountDto);
 
         bankAccount.setAccountName(bankAccountName);
         bankAccount.setUser(user);

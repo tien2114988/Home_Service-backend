@@ -17,6 +17,6 @@ public class HouseCleaning {
     private float area;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
     private Post post;
 }

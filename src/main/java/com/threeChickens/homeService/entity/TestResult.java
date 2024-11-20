@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -34,6 +36,6 @@ public class TestResult {
     @JoinColumn(name="test_id", nullable=false)
     private Test test;
 
-    @OneToOne(mappedBy = "testResult")
-    private AnswerForQuestion answerForQuestion;
+    @OneToMany(mappedBy = "testResult")
+    private Set<AnswerForQuestion> answerForQuestions = new HashSet<>();;
 }
