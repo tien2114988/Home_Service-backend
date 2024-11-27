@@ -5,14 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateTestDto {
-    private int testDuration;
+public class GetQuestionDto {
+    private String id;
 
-    private int passedPoint;
+    private String type;
 
-    private int questionCount;
+    private String content;
+
+    private Set<ChoiceDto> choices;
 }

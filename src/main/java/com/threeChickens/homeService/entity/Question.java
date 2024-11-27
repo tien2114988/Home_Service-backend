@@ -1,5 +1,6 @@
 package com.threeChickens.homeService.entity;
 
+import com.threeChickens.homeService.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,8 +18,11 @@ public class Question {
     @GeneratedValue(strategy= GenerationType.UUID)
     private String id;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private QuestionType type;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private boolean deleted;
@@ -28,8 +32,8 @@ public class Question {
     private Test test;
 
     @OneToMany(mappedBy = "question")
-    private Set<AnswerForQuestion> answerForQuestions = new HashSet<>();;
+    private Set<AnswerForQuestion> answerForQuestions = new HashSet<>();
 
-    @OneToMany(mappedBy="question")
-    private Set<Choice> choices = new HashSet<>();;
+    @OneToMany(mappedBy="question", cascade=CascadeType.ALL)
+    private Set<Choice> choices = new HashSet<>();
 }

@@ -1,4 +1,4 @@
-package com.threeChickens.homeService.dto.work;
+package com.threeChickens.homeService.dto.test;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FreelancerWorkDto {
-    private String status;
+public class CreateAnswerDto {
+    private String questionId;
+    private String choiceId;
+    private String content;
 }

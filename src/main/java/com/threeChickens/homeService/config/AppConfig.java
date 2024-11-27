@@ -37,7 +37,7 @@ public class AppConfig {
             bankService.initBanks();
             workService.initWorks();
             userService.initUsers();
-            addressService.initProvinces();
+//            addressService.initProvinces();
         };
     }
 

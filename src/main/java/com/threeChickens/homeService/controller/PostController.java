@@ -49,7 +49,7 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<ApiResponse<List<GetPostDto>>> getAllByUserId(@PathVariable("userId") String userId) {
         List<GetPostDto> getPostDtoList = postService.getAllPostsByUserId(userId);
         ApiResponse<List<GetPostDto>> res =  ApiResponse.<List<GetPostDto>>builder().items(getPostDtoList).build();

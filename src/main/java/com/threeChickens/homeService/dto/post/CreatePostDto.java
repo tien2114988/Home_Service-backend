@@ -31,5 +31,6 @@ public class CreatePostDto {
     private Set<CreateWorkScheduleDto> workSchedules;
 
     private String customerId;
+    private String addressId;
     private String workId;
 }

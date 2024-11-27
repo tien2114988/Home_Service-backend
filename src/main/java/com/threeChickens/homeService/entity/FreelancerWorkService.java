@@ -3,6 +3,11 @@ package com.threeChickens.homeService.entity;
 import com.threeChickens.homeService.enums.FreelancerWorkStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -10,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class FreelancerWorkService {
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)
@@ -18,6 +24,14 @@ public class FreelancerWorkService {
     @Enumerated(EnumType.STRING)
     private FreelancerWorkStatus status;
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)

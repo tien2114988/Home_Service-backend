@@ -37,6 +37,8 @@ public class Post {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String customerNote;
 
     private Time startTime;
@@ -73,14 +75,18 @@ public class Post {
     private User customer;
 
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="address_id", nullable=false)
+    private Address address;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="work_id", nullable=false)
     private Work work;
 
     @OneToMany(mappedBy="post", cascade = CascadeType.ALL)
-    private Set<WorkSchedule> workSchedules = new HashSet<>();;
+    private Set<WorkSchedule> workSchedules = new HashSet<>();
 
     @OneToMany(mappedBy="post", cascade = CascadeType.ALL)
-    private Set<Notification> notifications = new HashSet<>();;
+    private Set<Notification> notifications = new HashSet<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<FreelancerTakePost> freelancerTakePosts = new HashSet<>();

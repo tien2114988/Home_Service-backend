@@ -16,6 +16,8 @@ public class Rate {
 
     private int star;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String comment;
 
     @ManyToOne(cascade = CascadeType.ALL)

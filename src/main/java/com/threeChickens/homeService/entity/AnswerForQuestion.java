@@ -14,7 +14,11 @@ public class AnswerForQuestion {
     @GeneratedValue(strategy= GenerationType.UUID)
     private String id;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
+
+    private boolean correct;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "question_id", nullable=false)
@@ -23,4 +27,8 @@ public class AnswerForQuestion {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "test_result_id", nullable=false)
     private TestResult testResult;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "choice_id")
+    private Choice choice;
 }

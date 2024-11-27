@@ -42,7 +42,7 @@ public class OtpService {
         String otp = generateOtp();
         Otp otpEntity = Otp.builder().email(email).otp(otp).verified(false).build();
 
-        boolean isSignUp = !userService.existUserByEmail(email, AccountType.EMAIL,true);
+        boolean isSignUp = !userService.existUserByEmail(email,true);
 
         if(isSignUp){
             otpRepository.deleteAllByEmail(email);
@@ -54,25 +54,25 @@ public class OtpService {
         emailUtil.sendEmail(email, "OTP Code", message, false);
     }
 
-    public void verifyOtp(VerifyOtpDto verifyOtpDto) {
-        Otp otp = otpRepository.findFirstByEmailAndOtpOrderByCreatedDateDesc(verifyOtpDto.getEmail(), verifyOtpDto.getOtp()).orElseThrow(
+    public void verifyOtp(String email, String otp) {
+        Otp otpEntity = otpRepository.findFirstByEmailAndOtpOrderByCreatedDateDesc(email, otp).orElseThrow(
                 ()->new AppException(StatusCode.OTP_INVALID)
         );
 
-        if (otp.getCreatedDate().plusSeconds(OTP_VALID_DURATION).isBefore(LocalDateTime.now())) {
+        if (otpEntity.getCreatedDate().plusSeconds(OTP_VALID_DURATION).isBefore(LocalDateTime.now())) {
             throw new AppException(StatusCode.EXPIRED_OTP);
         }
 
-        boolean isSignUp = !userService.existUserByEmail(verifyOtpDto.getEmail(), AccountType.EMAIL,true);
+        boolean isSignUp = !userService.existUserByEmail(email,true);
 
         if(isSignUp){
-            emailHasSignUp(verifyOtpDto.getEmail());
-        }else if(otp.isVerified()){
+            emailHasSignUp(email);
+        }else if(otpEntity.isVerified()){
             throw new AppException(StatusCode.OTP_EXISTED);
         }
 
-        otp.setVerified(true);
-        otpRepository.save(otp);
+        otpEntity.setVerified(true);
+        otpRepository.save(otpEntity);
     }
 
     public void verifyOtpForAuth(String email, String otp) {

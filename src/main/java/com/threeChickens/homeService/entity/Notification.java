@@ -31,6 +31,8 @@ public class Notification {
 
     private boolean isView;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private boolean deleted;

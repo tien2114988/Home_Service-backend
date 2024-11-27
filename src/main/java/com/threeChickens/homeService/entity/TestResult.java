@@ -3,7 +3,7 @@ package com.threeChickens.homeService.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,13 +18,15 @@ public class TestResult {
     @GeneratedValue(strategy= GenerationType.UUID)
     private String id;
 
-    private ZonedDateTime startTime;
+    private LocalDateTime startTime;
 
-    private ZonedDateTime endTime;
+    private LocalDateTime endTime;
 
     private boolean isPassed;
 
     private int numOfCorrectAnswers;
+
+    private int point;
 
     private boolean deleted;
 
@@ -36,6 +38,6 @@ public class TestResult {
     @JoinColumn(name="test_id", nullable=false)
     private Test test;
 
-    @OneToMany(mappedBy = "testResult")
-    private Set<AnswerForQuestion> answerForQuestions = new HashSet<>();;
+    @OneToMany(mappedBy = "testResult", cascade = CascadeType.ALL)
+    private Set<AnswerForQuestion> answerForQuestions = new HashSet<>();
 }

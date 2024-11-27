@@ -23,6 +23,7 @@ public enum StatusCode {
     PACKAGE_NAME_INVALID(-1107,"Package Name có giá trị _1DAY, _1MONTH, _2MONTH, _3MONTH, _4MONTH", HttpStatus.BAD_REQUEST),
     TAKE_POST_STATUS_INVALID(-1108,"Take Post Status có giá trị PENDING, REJECTED, ACCEPTED", HttpStatus.BAD_REQUEST),
     FREELANCER_WORK_STATUS_INVALID(-1109,"Freelancer Work Status có giá trị INITIAL, DISABLE, WORK, PROHIBITIVE ", HttpStatus.BAD_REQUEST),
+    QUESTION_TYPE_INVALID(-1110,"Loại câu hỏi có giá trị MULTICHOICE, ESSAY ", HttpStatus.BAD_REQUEST),
 
     USERNAME_EXISTED(-1200,"Tên người dùng đã tồn tại", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED(-1201,"Địa chỉ email đã tồn tại tài khoản", HttpStatus.BAD_REQUEST),
@@ -44,6 +45,9 @@ public enum StatusCode {
     PROVINCE_NOT_FOUND(-1312, "Mã tỉnh không tồn tại", HttpStatus.BAD_REQUEST),
     DISTRICT_NOT_FOUND(-1313, "Mã quận không tồn tại", HttpStatus.BAD_REQUEST),
     ADDRESS_NOT_FOUND(-1314, "Địa chỉ không tồn tại", HttpStatus.BAD_REQUEST),
+    TEST_NOT_FOUND(-1315, "Bài kiểm tra không tồn tại", HttpStatus.BAD_REQUEST),
+    QUESTION_NOT_FOUND(-1316, "Câu hỏi không tồn tại", HttpStatus.BAD_REQUEST),
+    CHOICE_NOT_FOUND(-1317, "Lựa chọn không tồn tại", HttpStatus.BAD_REQUEST),
 
     EXPIRED_OTP(-1400,"OTP hết hạn", HttpStatus.BAD_REQUEST),
     NOT_VERIFY(-1401, "Tài khoản ngân hàng không hợp lệ", HttpStatus.BAD_REQUEST),
@@ -52,10 +56,14 @@ public enum StatusCode {
     BANK_ACCOUNT_LINKED(-1404, "Tài khoản này đang được liên kết", HttpStatus.BAD_REQUEST),
     EMAIL_SIGN_UP(-1405, "Email đang được đăng ký bởi 1 người dùng khác", HttpStatus.BAD_REQUEST),
     POST_FULL_FREELANCER(-1406, "Đã đủ Freelancer nhận công việc", HttpStatus.BAD_REQUEST),
+    DELETE_RIGHT_CHOICE(-1407, "Không thể xóa lựa chọn đúng", HttpStatus.BAD_REQUEST),
 
     FAIL_GET_USER_INFO(-1500, "Lấy thông tin người dùng thất bại", HttpStatus.BAD_REQUEST),
     FAIL_FEE_TRANSFER(-1501, "Chuyển phí thất bại", HttpStatus.BAD_REQUEST),
     FAIL_GRANT_REMOVE(-1502, "Grant remove thất bại", HttpStatus.BAD_REQUEST),
+    FAIL_GOOGLE_MAP_PLACE(-1503, "Tìm kiếm địa điểm bằng input trong google map thất bại", HttpStatus.BAD_REQUEST),
+    FAIL_GOOGLE_MAP_GEOCODE(-1504, "Tìm kiếm địa điểm bằng tọa độ trong google map thất bại", HttpStatus.BAD_REQUEST),
+    FAIL_GOOGLE_MAP_DISTANCE_MATRIX(-1505, "Tính toán khoảng cách trong google map thất bại", HttpStatus.BAD_REQUEST),
 
     MISSING_HOUSE_CLEANING(-1600, "Thiếu tham số House Cleaning", HttpStatus.BAD_REQUEST),
     MISSING_BABYSITTING(-1601, "Thiếu tham số Babysitting", HttpStatus.BAD_REQUEST),

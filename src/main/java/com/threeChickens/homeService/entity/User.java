@@ -34,7 +34,7 @@ public class User {
 
     private String email;
 
-    private String password;
+//    private String password;
 
     @CreatedDate
     private LocalDateTime createdAt;

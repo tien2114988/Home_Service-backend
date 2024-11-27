@@ -22,7 +22,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/")
+    @GetMapping
     @Operation(summary = "Get all User for Admin")
     public ResponseEntity<ApiResponse<List<GetUserDto>>> getAll() {
         List<GetUserDto> getUserDtoList = userService.getUsers();

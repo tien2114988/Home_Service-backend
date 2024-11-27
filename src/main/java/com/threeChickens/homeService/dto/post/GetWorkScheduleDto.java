@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetWorkScheduleDto {
+    private String id;
     private LocalDate date;
     private WorkScheduleStatus status;
 }

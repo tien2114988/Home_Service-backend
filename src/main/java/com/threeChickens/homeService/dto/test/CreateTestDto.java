@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateTestDto {
     private int testDuration;
-
     private int passedPoint;
-
     private int questionCount;
 }

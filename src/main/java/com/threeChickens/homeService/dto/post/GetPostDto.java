@@ -1,5 +1,6 @@
 package com.threeChickens.homeService.dto.post;
 
+import com.threeChickens.homeService.dto.address.GetAddressDto;
 import com.threeChickens.homeService.dto.babysitting.BabysittingDto;
 import com.threeChickens.homeService.dto.houseCleaning.HouseCleaningDto;
 import com.threeChickens.homeService.dto.user.GetUserDto;
@@ -41,4 +42,6 @@ public class GetPostDto {
     private GetWorkDto work;
     private HouseCleaningDto houseCleaning;
     private BabysittingDto babysitting;
+    private GetAddressDto address;
+    private Set<GetTakePostDto> freelancerTakePosts;
 }

@@ -23,9 +23,9 @@ public class SignUpDto {
     @NotNull(message = "Name must not be null")
     private String name;
 
-    @NotNull(message = "Password must not be null")
-    @PasswordConstraint
-    private String password;
+//    @NotNull(message = "Password must not be null")
+//    @PasswordConstraint
+//    private String password;
 
     @NotNull(message = "Otp must not be null")
     private String otp;

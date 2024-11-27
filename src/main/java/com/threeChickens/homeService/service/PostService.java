@@ -45,14 +45,18 @@ public class PostService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Post getPostById(String id){
-        return postRepository.findByIdAndDeletedIsFalse(id).orElseThrow(
-                () -> new AppException(StatusCode.POST_NOT_FOUND)
-        );
+    public Post getPostById(String id, boolean isCheck){
+        if(isCheck){
+            return postRepository.findByIdAndDeletedIsFalse(id).orElseThrow(
+                    () -> new AppException(StatusCode.POST_NOT_FOUND)
+            );
+        }else{
+            return postRepository.findByIdAndDeletedIsFalse(id).orElse(null);
+        }
     }
 
     public GetPostDto takePost(String id, CreateTakePostDto createTakePostDto){
-        Post post = getPostById(id);
+        Post post = getPostById(id, true);
 
         User freelancer = userService.getByIdAndRole(createTakePostDto.getFreelancerId(), UserRole.FREELANCER);
 
@@ -89,7 +93,7 @@ public class PostService {
     }
 
     public GetPostDto cancelPost(String id, CancelPostDto cancelPostDto){
-        Post post = getPostById(id);
+        Post post = getPostById(id, true);
 
         if(cancelPostDto == null){
             User user = post.getCustomer();
@@ -143,6 +147,9 @@ public class PostService {
         );
 
         User customer = userService.getByIdAndRole(createPostDto.getCustomerId(), UserRole.CUSTOMER);
+        Address address = customer.getAddresses().stream().filter(addr -> Objects.equals(addr.getId(), createPostDto.getAddressId())).findFirst().orElseThrow(
+                ()->new AppException(StatusCode.ADDRESS_NOT_FOUND)
+        );
 
         try {
             post.setPaymentType(PaymentType.valueOf(createPostDto.getPaymentType()));
@@ -157,6 +164,7 @@ public class PostService {
         }
 
         post.setCustomer(customer);
+        post.setAddress(address);
         post.setWork(work);
 
 

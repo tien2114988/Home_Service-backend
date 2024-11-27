@@ -2,6 +2,9 @@ package com.threeChickens.homeService.service;
 
 import com.threeChickens.homeService.dto.address.CreateAddressDto;
 import com.threeChickens.homeService.dto.address.GetAddressDto;
+import com.threeChickens.homeService.dto.googleMap.DistanceMatrixDto;
+import com.threeChickens.homeService.dto.googleMap.GeocodeDto;
+import com.threeChickens.homeService.dto.googleMap.PlaceDto;
 import com.threeChickens.homeService.dto.province.DistrictDto;
 import com.threeChickens.homeService.dto.province.ProvinceDto;
 import com.threeChickens.homeService.dto.province.WardDto;
@@ -14,11 +17,13 @@ import com.threeChickens.homeService.repository.AddressRepository;
 import com.threeChickens.homeService.repository.DistrictRepository;
 import com.threeChickens.homeService.repository.ProvinceRepository;
 import com.threeChickens.homeService.repository.WardRepository;
+import com.threeChickens.homeService.utils.GoogleMapUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,10 +42,22 @@ public class AddressService {
     private AddressRepository addressRepository;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private GoogleMapUtil googleMapUtil;
+
+    public List<PlaceDto> searchPlaceByGoogleMap(String input) throws IOException {
+        return googleMapUtil.placeAutocomplete(input);
+    }
+
+    public GeocodeDto geocode(String placeId, String latitude, String longitude) throws IOException {
+        return googleMapUtil.geocode(placeId, latitude,longitude);
+    }
+
+    public DistanceMatrixDto distanceMatrix(String sourcePlaceId, String destinationPlaceId) throws IOException {
+        return googleMapUtil.distanceMatrix(sourcePlaceId, destinationPlaceId);
+    }
 
     public List<WardDto> getProvinces(Integer provinceCode, Integer districtCode) {
         if(provinceCode != null && districtCode != null) {
@@ -67,27 +84,27 @@ public class AddressService {
         }
     }
 
-    public void initProvinces(){
-        if(provinceRepository.count()==0){
-            String url = "https://provinces.open-api.vn/api/?depth=3";
-            List<ProvinceDto> provinces = List.of(Objects.requireNonNull(restTemplate.getForObject(url, ProvinceDto[].class)));
-
-            provinces.forEach(provinceDto -> {
-                Province province = modelMapper.map(provinceDto, Province.class);
-                provinceRepository.save(province);
-                provinceDto.getDistricts().forEach(districtDto -> {
-                    DistrictKey districtKey = DistrictKey.builder().code(districtDto.getCode()).provinceCode(province.getCode()).build();
-                    District district = District.builder().code(districtKey).name(districtDto.getName()).province(province).build();
-                    districtRepository.save(district);
-                    districtDto.getWards().forEach(wardDto -> {
-                        WardKey wardKey = WardKey.builder().code(wardDto.getCode()).districtCode(district.getCode()).build();
-                        Ward ward = Ward.builder().code(wardKey).name(wardDto.getName()).district(district).build();
-                        wardRepository.save(ward);
-                    });
-                });
-            });
-        }
-    }
+//    public void initProvinces(){
+//        if(provinceRepository.count()==0){
+//            String url = "https://provinces.open-api.vn/api/?depth=3";
+//            List<ProvinceDto> provinces = List.of(Objects.requireNonNull(restTemplate.getForObject(url, ProvinceDto[].class)));
+//
+//            provinces.forEach(provinceDto -> {
+//                Province province = modelMapper.map(provinceDto, Province.class);
+//                provinceRepository.save(province);
+//                provinceDto.getDistricts().forEach(districtDto -> {
+//                    DistrictKey districtKey = DistrictKey.builder().code(districtDto.getCode()).provinceCode(province.getCode()).build();
+//                    District district = District.builder().code(districtKey).name(districtDto.getName()).province(province).build();
+//                    districtRepository.save(district);
+//                    districtDto.getWards().forEach(wardDto -> {
+//                        WardKey wardKey = WardKey.builder().code(wardDto.getCode()).districtCode(district.getCode()).build();
+//                        Ward ward = Ward.builder().code(wardKey).name(wardDto.getName()).district(district).build();
+//                        wardRepository.save(ward);
+//                    });
+//                });
+//            });
+//        }
+//    }
 
     public Ward findWardByCode(int provinceCode, int districtCode, int wardCode){
         DistrictKey districtKey = DistrictKey.builder().code(districtCode).provinceCode(provinceCode).build();
@@ -120,9 +137,10 @@ public class AddressService {
     }
 
     public GetAddressDto create(CreateAddressDto createAddressDto, User user){
-        Ward ward = findWardByCode(createAddressDto.getProvinceCode(), createAddressDto.getDistrictCode(), createAddressDto.getWardCode());
+//        Ward ward = findWardByCode(createAddressDto.getProvinceCode(), createAddressDto.getDistrictCode(), createAddressDto.getWardCode());
         Address address = modelMapper.map(createAddressDto, Address.class);
-        address.setWard(ward);
+//        address.setWard(ward);
+
         address.setUser(user);
         address.setDefault(user.getAddresses().isEmpty());
         address = addressRepository.save(address);
@@ -153,10 +171,10 @@ public class AddressService {
         }
 
         // set ward
-        if(updateAddressDto.getWardCode()!=null) {
-            Ward ward = findWardByCode(updateAddressDto.getProvinceCode(), updateAddressDto.getDistrictCode(), updateAddressDto.getWardCode());
-            address.setWard(ward);
-        }
+//        if(updateAddressDto.getWardCode()!=null) {
+//            Ward ward = findWardByCode(updateAddressDto.getProvinceCode(), updateAddressDto.getDistrictCode(), updateAddressDto.getWardCode());
+//            address.setWard(ward);
+//        }
 
         address = addressRepository.save(address);
         return modelMapper.map(address, GetAddressDto.class);

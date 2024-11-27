@@ -30,7 +30,7 @@ public class Test {
     private Work work;
 
     @OneToMany(mappedBy="test")
-    private Set<TestResult> testResults = new HashSet<>();;
+    private Set<TestResult> testResults = new HashSet<>();
 
     @OneToMany(mappedBy="test")
     private Set<Question> questions = new HashSet<>();

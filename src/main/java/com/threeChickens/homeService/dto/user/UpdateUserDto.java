@@ -18,9 +18,9 @@ public class UpdateUserDto {
     private String name;
     private String gender;
     private String status;
-    private long balance;
+    private Long balance;
     private String phoneNumber;
-    private int reputationPoint;
+    private Integer reputationPoint;
 
     private CreateBankAccountDto bankAccount;
 }

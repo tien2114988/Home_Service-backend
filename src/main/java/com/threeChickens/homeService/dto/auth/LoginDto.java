@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 public class LoginDto {
     @Email
     private String email;
-
-    @PasswordConstraint
-    private String password;
+//
+//    @PasswordConstraint
+//    private String password;
 
     @NotNull(message = "Role must not be null")
     private String role;

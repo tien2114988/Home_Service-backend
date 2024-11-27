@@ -26,15 +26,17 @@ public class Work {
 
     private String image;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToOne(mappedBy = "work")
-    private Test test;
+    @OneToOne(mappedBy = "work", cascade = CascadeType.ALL)
+    private Test test = new Test();
 
-    @OneToMany(mappedBy="work")
+    @OneToMany(mappedBy="work", cascade = CascadeType.ALL)
     private Set<Post> posts = new HashSet<>();
 
-    @OneToMany(mappedBy = "work")
+    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL)
     private Set<FreelancerWorkService> freelancerWorkServices =  new HashSet<>();
 }
 

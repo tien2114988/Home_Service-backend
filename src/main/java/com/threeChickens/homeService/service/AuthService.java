@@ -32,11 +32,11 @@ public class AuthService{
     private GoogleAuthUtil googleAuthUtil;
 
     public void verifyOtp(VerifyOtpDto otpDto) {
-        otpService.verifyOtp(otpDto);
+        otpService.verifyOtp(otpDto.getEmail(), otpDto.getOtp());
     }
 
     public GetUserDto signUp(SignUpDto signUpDto){
-        userService.existUserByEmail(signUpDto.getEmail(), AccountType.EMAIL, false);
+        userService.existUserByEmail(signUpDto.getEmail(), false);
 
         otpService.verifyOtpForAuth(signUpDto.getEmail(), signUpDto.getOtp());
 
@@ -48,15 +48,15 @@ public class AuthService{
         if(otpDto.getRole()!=null){
             userService.existUserByEmailAndRole(otpDto);
         }else{
-            userService.existUserByEmail(email, AccountType.EMAIL, false);
+            userService.existUserByEmail(email, false);
             otpService.emailHasSignUp(email);
         }
         otpService.sendOtp(email);
     }
 
     public GetUserDto logIn(LoginDto loginDto) {
-        otpService.verifyOtpForAuth(loginDto.getEmail(), loginDto.getOtp());
-        return userService.getUserByEmailAndPassword(loginDto);
+        otpService.verifyOtp(loginDto.getEmail(), loginDto.getOtp());
+        return userService.getUserByEmail(loginDto);
     }
 
     public JwtDto logInForAdmin(AdminLoginDto adminLoginDto) {

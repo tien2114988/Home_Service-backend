@@ -1,5 +1,6 @@
 package com.threeChickens.homeService.dto.work;
 
+import com.threeChickens.homeService.dto.test.GetTestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,4 +18,6 @@ public class GetWorkDto {
     private String image;
 
     private String description;
+
+    private GetTestDto test;
 }

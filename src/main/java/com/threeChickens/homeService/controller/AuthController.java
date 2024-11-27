@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.Map;
 
 @RestController
-@Tag(name = "Authentication", description = "APIs for Log In and Sign Up (sendOtp => verifyOtp => login/signup)")
+@Tag(name = "Authentication", description = "Sign up by Email : sendOtp => verifyOtp => signup, Log in by Email : sendOtp -> login")
 @RequestMapping("api/auth")
 public class AuthController {
     @Autowired
@@ -37,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/verifyOtp")
-    @Operation(summary = "Verify Otp for User to Login and SignUp",
+    @Operation(summary = "Verify Otp for User to SignUp",
             description = "Called after sendOtp, check otp is valid, expired")
     public ResponseEntity<ApiResponse<?>> verifyOtp(@RequestBody @Valid VerifyOtpDto verifyOtpDto){
         authService.verifyOtp(verifyOtpDto);

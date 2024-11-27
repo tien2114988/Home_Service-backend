@@ -3,6 +3,9 @@ package com.threeChickens.homeService.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -24,6 +27,8 @@ public class Address {
 
     private float longitude;
 
+    private String placeId;
+
     private boolean isDefault;
 
     private boolean deleted;
@@ -37,4 +42,7 @@ public class Address {
             @JoinColumn(name = "province_code", referencedColumnName = "province_code"),
             @JoinColumn(name = "ward_code", referencedColumnName = "code")})
     private Ward ward;
+
+    @OneToMany(mappedBy="address", cascade = CascadeType.ALL)
+    private Set<Post> posts = new HashSet<>();
 }

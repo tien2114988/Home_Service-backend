@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -26,6 +28,4 @@ public class GetTestDto {
 //    @OneToMany(mappedBy="test")
 //    private Set<TestResult> testResults;
 //
-//    @OneToMany(mappedBy="test")
-//    private Set<Question> questions;
 }
