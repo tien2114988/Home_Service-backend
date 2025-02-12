@@ -26,6 +26,8 @@ public class Work {
 
     private String image;
 
+    private int postPerMonth;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String description;

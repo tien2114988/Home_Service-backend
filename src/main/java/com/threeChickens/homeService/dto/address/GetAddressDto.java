@@ -14,7 +14,7 @@ public class GetAddressDto {
     private String customerName;
     private String phoneNumber;
     private String detail;
-    private AddressWardDto ward;
+//    private AddressWardDto ward;
     private float latitude;
     private float longitude;
     private boolean isDefault;

@@ -7,6 +7,7 @@ import com.threeChickens.homeService.dto.auth.*;
 import com.threeChickens.homeService.dto.googleAuth.GoogleLoginDto;
 import com.threeChickens.homeService.dto.googleAuth.GoogleSignupDto;
 import com.threeChickens.homeService.dto.googleAuth.UserInfoDto;
+import com.threeChickens.homeService.dto.user.GetUserDetailDto;
 import com.threeChickens.homeService.dto.user.GetUserDto;
 import com.threeChickens.homeService.enums.AccountType;
 import com.threeChickens.homeService.exception.AppException;
@@ -35,7 +36,7 @@ public class AuthService{
         otpService.verifyOtp(otpDto.getEmail(), otpDto.getOtp());
     }
 
-    public GetUserDto signUp(SignUpDto signUpDto){
+    public GetUserDetailDto signUp(SignUpDto signUpDto){
         userService.existUserByEmail(signUpDto.getEmail(), false);
 
         otpService.verifyOtpForAuth(signUpDto.getEmail(), signUpDto.getOtp());
@@ -54,7 +55,7 @@ public class AuthService{
         otpService.sendOtp(email);
     }
 
-    public GetUserDto logIn(LoginDto loginDto) {
+    public GetUserDetailDto logIn(LoginDto loginDto) {
         otpService.verifyOtp(loginDto.getEmail(), loginDto.getOtp());
         return userService.getUserByEmail(loginDto);
     }
@@ -63,7 +64,7 @@ public class AuthService{
         return adminService.checkAdmin(adminLoginDto);
     }
 
-    public GetUserDto verifyJwt(String jwt) throws ParseException, JOSEException {
+    public GetUserDetailDto verifyJwt(String jwt) throws ParseException, JOSEException {
         return userService.getUserByJwt(jwt);
     }
 
@@ -76,12 +77,12 @@ public class AuthService{
         return GoogleLinkDto.builder().url(link).build();
     }
 
-    public GetUserDto logInWithGoogle(GoogleLoginDto googleLoginDto) throws UnsupportedEncodingException {
+    public GetUserDetailDto logInWithGoogle(GoogleLoginDto googleLoginDto) throws UnsupportedEncodingException {
         UserInfoDto userInfoDto =  googleAuthUtil.getUserInfo(googleLoginDto.getCode(), googleLoginDto.getRedirectUri());
         return userService.getUserByGoogle(userInfoDto);
     }
 
-    public GetUserDto signUpWithGoogle(GoogleSignupDto googleSignupDto){
+    public GetUserDetailDto signUpWithGoogle(GoogleSignupDto googleSignupDto){
         return userService.createUserByGoogle(googleSignupDto);
     }
 

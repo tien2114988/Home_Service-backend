@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateTakePostDto {
-    private String freelancerId;
-    private String status;
+public class GetPostIdDto {
+    private String id;
 }

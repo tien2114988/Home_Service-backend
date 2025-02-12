@@ -30,9 +30,8 @@ public class TestResult {
 
     private boolean deleted;
 
-    @ManyToOne
-    @JoinColumn(name="freelancer_id", nullable=false)
-    private User freelancer;
+    @OneToOne(mappedBy = "testResult", cascade = CascadeType.ALL)
+    private FreelancerWorkService freelancerWorkService;
 
     @ManyToOne
     @JoinColumn(name="test_id", nullable=false)

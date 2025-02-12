@@ -21,6 +21,7 @@ public class Image {
 
     private boolean deleted;
 
-    @OneToMany(mappedBy = "image")
-    private Set<FreelancerWorkService> freelancerWorkServices = new HashSet<>();;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "freelancer_work_service_id")
+    private FreelancerWorkService freelancerWorkService;
 }

@@ -29,7 +29,7 @@ public class OtpService {
     @Autowired
     private UserService userService;
 
-    private static final long OTP_VALID_DURATION = 60*5; // 5m
+    private static final long OTP_VALID_DURATION = 60*50; // 5m
 
     private String generateOtp() {
         Random random = new Random();

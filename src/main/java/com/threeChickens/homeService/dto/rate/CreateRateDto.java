@@ -1,4 +1,4 @@
-package com.threeChickens.homeService.dto.post;
+package com.threeChickens.homeService.dto.rate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdatePostDto {
-    private String status;
-    private CreateTakePostDto createTakePostDto;
+public class CreateRateDto {
+    private String freelancerId;
+    private String comment;
+    private int star;
 }

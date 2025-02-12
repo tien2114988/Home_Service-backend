@@ -6,6 +6,7 @@ import com.threeChickens.homeService.dto.admin.AdminDto;
 import com.threeChickens.homeService.dto.auth.*;
 import com.threeChickens.homeService.dto.googleAuth.GoogleLoginDto;
 import com.threeChickens.homeService.dto.googleAuth.GoogleSignupDto;
+import com.threeChickens.homeService.dto.user.GetUserDetailDto;
 import com.threeChickens.homeService.dto.user.GetUserDto;
 import com.threeChickens.homeService.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,9 +30,9 @@ public class AuthController {
     @PostMapping("/signUp")
     @Operation(summary = "Sign Up for Customer and Freelancer",
             description = "Called after sendOtp and verifyOtp.")
-    public ResponseEntity<ApiResponse<GetUserDto>> signUp(@RequestBody @Valid SignUpDto signUpDto) {
-        GetUserDto getUserDto = authService.signUp(signUpDto);
-        ApiResponse<GetUserDto> res = ApiResponse.<GetUserDto>builder().items(getUserDto).build();
+    public ResponseEntity<ApiResponse<GetUserDetailDto>> signUp(@RequestBody @Valid SignUpDto signUpDto) {
+        GetUserDetailDto getUserDto = authService.signUp(signUpDto);
+        ApiResponse<GetUserDetailDto> res = ApiResponse.<GetUserDetailDto>builder().items(getUserDto).build();
         return ResponseEntity.ok(res);
     }
 
@@ -64,27 +65,27 @@ public class AuthController {
     @PostMapping("/google/signUp")
     @Operation(summary = "Create account by login google",
             description = "Call after signUp by Google, pass user data and role to create user")
-    public ResponseEntity<ApiResponse<GetUserDto>> signUpWithGoogle(@RequestBody GoogleSignupDto googleSignupDto) throws UnsupportedEncodingException {
-        GetUserDto getUserDto = authService.signUpWithGoogle(googleSignupDto);
-        ApiResponse<GetUserDto> res = ApiResponse.<GetUserDto>builder().items(getUserDto).build();
+    public ResponseEntity<ApiResponse<GetUserDetailDto>> signUpWithGoogle(@RequestBody GoogleSignupDto googleSignupDto) throws UnsupportedEncodingException {
+        GetUserDetailDto getUserDto = authService.signUpWithGoogle(googleSignupDto);
+        ApiResponse<GetUserDetailDto> res = ApiResponse.<GetUserDetailDto>builder().items(getUserDto).build();
         return ResponseEntity.ok(res);
     }
 
     @PostMapping("/google/logIn")
     @Operation(summary = "Both logIn and signUp by Google",
             description = "if login : return jwt and user data, if signup : only return user data (pass user data and role to signUp with Google to create account)")
-    public ResponseEntity<ApiResponse<GetUserDto>> logInWithGoogle(@RequestBody GoogleLoginDto googleLoginDto) throws UnsupportedEncodingException {
-        GetUserDto getUserDto = authService.logInWithGoogle(googleLoginDto);
-        ApiResponse<GetUserDto> res = ApiResponse.<GetUserDto>builder().items(getUserDto).build();
+    public ResponseEntity<ApiResponse<GetUserDetailDto>> logInWithGoogle(@RequestBody GoogleLoginDto googleLoginDto) throws UnsupportedEncodingException {
+        GetUserDetailDto getUserDto = authService.logInWithGoogle(googleLoginDto);
+        ApiResponse<GetUserDetailDto> res = ApiResponse.<GetUserDetailDto>builder().items(getUserDto).build();
         return ResponseEntity.ok(res);
     }
 
     @PostMapping("/logIn")
     @Operation(summary = "Log in for User",
             description = "Called after sendOtp, check otp is valid, expired")
-    public ResponseEntity<ApiResponse<GetUserDto>> logIn(@RequestBody @Valid LoginDto loginDto) {
-        GetUserDto getUserDto = authService.logIn(loginDto);
-        ApiResponse<GetUserDto> res = ApiResponse.<GetUserDto>builder().items(getUserDto).build();
+    public ResponseEntity<ApiResponse<GetUserDetailDto>> logIn(@RequestBody @Valid LoginDto loginDto) {
+        GetUserDetailDto getUserDto = authService.logIn(loginDto);
+        ApiResponse<GetUserDetailDto> res = ApiResponse.<GetUserDetailDto>builder().items(getUserDto).build();
         return ResponseEntity.ok(res);
     }
 
@@ -104,9 +105,9 @@ public class AuthController {
 
     @PostMapping("/verifyJwtForUser")
     @Operation(summary = "Verify Jwt for Admin", description = "Check jwt to know whether navigate to login page or homepage")
-    public ResponseEntity<ApiResponse<GetUserDto>> verifyJwtUser(@RequestBody JwtDto jwtDto) throws ParseException, JOSEException {
-        GetUserDto getUserDto = authService.verifyJwt(jwtDto.getJwt());
-        ApiResponse<GetUserDto> res = ApiResponse.<GetUserDto>builder().items(getUserDto).build();
+    public ResponseEntity<ApiResponse<GetUserDetailDto>> verifyJwtUser(@RequestBody JwtDto jwtDto) throws ParseException, JOSEException {
+        GetUserDetailDto getUserDto = authService.verifyJwt(jwtDto.getJwt());
+        ApiResponse<GetUserDetailDto> res = ApiResponse.<GetUserDetailDto>builder().items(getUserDto).build();
         return ResponseEntity.ok(res);
     }
 

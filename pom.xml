@@ -57,6 +57,14 @@
 			<version>8.0.33</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.4.2</version>
+		</dependency>
+
+
 		<!-- https://mvnrepository.com/artifact/com.squareup.okhttp/okhttp -->
 		<dependency>
 			<groupId>com.squareup.okhttp</groupId>
@@ -116,6 +124,8 @@
 			<version>3.2.1</version>
 		</dependency>
 
+
+
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -129,6 +139,20 @@
 			<artifactId>swagger-annotations</artifactId>
 			<version>2.2.25</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.auth</groupId>
+			<artifactId>google-auth-library-oauth2-http</artifactId>
+			<version>1.29.0</version> <!-- Hoặc phiên bản mới hơn -->
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/vn.payos/payos-java -->
+		<dependency>
+			<groupId>vn.payos</groupId>
+			<artifactId>payos-java</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -147,8 +171,9 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>33.2.0-jre</version>
+			<version>33.4.0-jre</version>
 		</dependency>
+
 
 		<!-- https://mvnrepository.com/artifact/com.squareup.okhttp/okhttp -->
 		<dependency>

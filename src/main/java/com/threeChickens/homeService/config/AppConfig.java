@@ -3,6 +3,7 @@ package com.threeChickens.homeService.config;
 
 import com.threeChickens.homeService.repository.UserRepository;
 import com.threeChickens.homeService.service.*;
+import com.threeChickens.homeService.utils.SeedDataUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,29 +16,13 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class AppConfig {
     @Autowired
-    private AdminService adminService;
-
-    @Autowired
-    private BankService bankService;
-
-    @Autowired
-    private WorkService workService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private AddressService addressService;
+    private SeedDataUtil seedDataUtil;
 
     @Bean
     @Transactional
     ApplicationRunner applicationRunner(){
         return args -> {
-            adminService.initAdminAccounts();
-            bankService.initBanks();
-            workService.initWorks();
-            userService.initUsers();
-//            addressService.initProvinces();
+            seedDataUtil.seedData();
         };
     }
 

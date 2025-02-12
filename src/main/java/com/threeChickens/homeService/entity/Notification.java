@@ -29,8 +29,6 @@ public class Notification {
 
     private String title;
 
-    private boolean isView;
-
     @Lob
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -41,6 +39,6 @@ public class Notification {
     @JoinColumn(name="post_id", nullable=false)
     private Post post;
 
-    @ManyToMany
-    private Set<User> users = new HashSet<>();;
+    @OneToMany(mappedBy="notification")
+    private Set<UserNotification> users = new HashSet<>();
 }

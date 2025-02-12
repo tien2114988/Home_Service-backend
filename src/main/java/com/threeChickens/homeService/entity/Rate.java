@@ -25,10 +25,10 @@ public class Rate {
     private Post post;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "freelancer_id", nullable=false)
-    private User freelancer;
+    @JoinColumn(name = "freelancer_work_service_id", nullable=false)
+    private FreelancerWorkService freelancerWorkService;
 
-    @ManyToOne
-    @JoinColumn(name="customer_id", nullable=false)
-    private User customer;
+//    @ManyToOne
+//    @JoinColumn(name="customer_id", nullable=false)
+//    private User customer;
 }

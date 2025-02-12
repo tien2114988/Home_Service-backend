@@ -1,23 +1,23 @@
 package com.threeChickens.homeService.service;
 
-import com.threeChickens.homeService.dto.user.GetUserDto;
 import com.threeChickens.homeService.dto.work.CreateFreelancerWorkDto;
 import com.threeChickens.homeService.dto.work.CreateWorkDto;
-import com.threeChickens.homeService.dto.work.GetFreelancerWorkDto;
+import com.threeChickens.homeService.dto.work.GetDetailFreelancerWorkDto;
 import com.threeChickens.homeService.dto.work.GetWorkDto;
 import com.threeChickens.homeService.entity.*;
-import com.threeChickens.homeService.enums.FreelancerWorkStatus;
-import com.threeChickens.homeService.enums.UserRole;
+import com.threeChickens.homeService.enums.*;
 import com.threeChickens.homeService.exception.AppException;
 import com.threeChickens.homeService.exception.StatusCode;
 import com.threeChickens.homeService.repository.FreelancerWorkRepository;
 import com.threeChickens.homeService.repository.WorkRepository;
+import com.threeChickens.homeService.utils.FileUploadUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,23 +37,32 @@ public class WorkService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public void initWorks(){
-        if(workRepository.count()==0){
-            Work work1 = Work.builder().name("HOUSECLEANING")
-                    .image("https://cdn2.fptshop.com.vn/unsafe/Uploads/images/tin-tuc/169183/Originals/fba1a1bb-1-1.jpg")
-                    .description("Công việc dọn dẹp nhà bao gồm các nhiệm vụ cơ bản để duy trì sự sạch sẽ và gọn gàng của không gian sống. Nhân viên sẽ chịu trách nhiệm lau chùi sàn nhà, vệ sinh nội thất, làm sạch cửa sổ, dọn dẹp phòng tắm và nhà bếp, cùng việc sắp xếp lại đồ đạc nếu cần. Dịch vụ này đặc biệt hữu ích cho các gia đình bận rộn hoặc những người không có thời gian để tự mình dọn dẹp. Sự chuyên nghiệp, chu đáo và tinh thần trách nhiệm là yếu tố quan trọng để đảm bảo khách hàng luôn hài lòng.").build();
-            Work work2 = Work.builder().name("BABYSITTING")
-                    .image("https://www.droppii.com/wp-content/uploads/2023/01/Phai-that-su-yeu-tre-con.jpg")
-                    .description("Công việc trông trẻ tập trung vào việc chăm sóc và bảo vệ trẻ em trong khi cha mẹ vắng mặt. Nhân viên trông trẻ sẽ đảm bảo an toàn cho trẻ, hỗ trợ các hoạt động học tập và vui chơi, chuẩn bị bữa ăn nhẹ và giúp trẻ tuân thủ lịch sinh hoạt hàng ngày. Dịch vụ này yêu cầu sự tận tâm, kỹ năng giao tiếp tốt, và khả năng xử lý tình huống linh hoạt để mang lại sự yên tâm tuyệt đối cho phụ huynh.").build();
-            workRepository.save(work1);
-            workRepository.save(work2);
-        }
-    }
+    @Autowired
+    private TestService testService;
 
-    public List<GetWorkDto> getAllWorks(){
+    @Autowired
+    private FileUploadUtil fileUploadUtil;
+
+    public List<GetWorkDto> getAllWorks(String freelancerId){
         List<Work> works = workRepository.findAll();
         return works.stream().map(
-                work -> modelMapper.map(work, GetWorkDto.class)
+                work -> {
+                    GetWorkDto getWorkDto = modelMapper.map(work, GetWorkDto.class);
+                    int freelancerCount = work.getFreelancerWorkServices().stream().filter(req->req.getStatus()==FreelancerWorkStatus.WORK && !req.getFreelancer().isDeleted()).toList().size();
+                    int requestCount = work.getFreelancerWorkServices().stream().filter(req->req.getStatus()==FreelancerWorkStatus.INITIAL && !req.getFreelancer().isDeleted()).toList().size();
+                    getWorkDto.setNumOfFreelancers(freelancerCount);
+                    getWorkDto.setNumOfRequests(requestCount);
+                    if(freelancerId != null){
+                        User freelancer = userService.getByIdAndRole(freelancerId, UserRole.FREELANCER);
+                        Optional<FreelancerWorkService> freelancerWork = freelancer.getFreelancerWorkServices().stream().filter(freelancerWorkService -> Objects.equals(freelancerWorkService.getWork().getId(), work.getId())).findFirst();
+                        if(freelancerWork.isEmpty()){
+                            getWorkDto.setStatus(null);
+                        }else{
+                            getWorkDto.setStatus(freelancerWork.get().getStatus());
+                        }
+                    }
+                    return getWorkDto;
+                }
         ).toList();
     }
 
@@ -63,11 +72,30 @@ public class WorkService {
         );
     }
 
+    public GetDetailFreelancerWorkDto uploadImages(String id, MultipartFile[] images){
+        FreelancerWorkService freelancerWorkService = freelancerWorkRepository.findById(id).orElseThrow(
+                () -> new AppException(StatusCode.FREELANCER_WORK_NOT_FOUND)
+        );
 
-    public GetFreelancerWorkDto provideService(String workId, String freelancerId, CreateFreelancerWorkDto createFreelancerWorkDto){
+        Set<Image> freelancerWorkImages = new HashSet<>();
+
+        AtomicInteger i = new AtomicInteger();
+        Arrays.stream(images).forEach((image) -> {
+            String filePath = fileUploadUtil.saveImage(image,  id + "_" + i.getAndIncrement());
+            Image freelancerWorkImage = Image.builder().link(filePath).freelancerWorkService(freelancerWorkService).build();
+            freelancerWorkImages.add(freelancerWorkImage);
+        });
+        freelancerWorkService.setImages(freelancerWorkImages);
+
+        FreelancerWorkService finalFreelancerWorkService = freelancerWorkRepository.save(freelancerWorkService);
+        return modelMapper.map(finalFreelancerWorkService, GetDetailFreelancerWorkDto.class);
+    }
+
+
+    public GetDetailFreelancerWorkDto provideService(String workId, String freelancerId, CreateFreelancerWorkDto createFreelancerWorkDto){
         Work work = getWorkById(workId);
-
         User freelancer = userService.getByIdAndRole(freelancerId, UserRole.FREELANCER);
+        TestResult testResult = testService.getTestResultById(createFreelancerWorkDto.getTestResultId());
 
         FreelancerWorkService freelancerWorkService =  freelancerWorkRepository.findByWorkIdAndFreelancerId(workId, freelancerId).orElse(
                 null
@@ -80,6 +108,7 @@ public class WorkService {
                 freelancerWorkService = FreelancerWorkService.builder()
                         .work(work)
                         .freelancer(freelancer)
+                        .testResult(testResult)
                         .status(FreelancerWorkStatus.valueOf(createFreelancerWorkDto.getStatus()))
                         .description(createFreelancerWorkDto.getDescription())
                         .build();
@@ -90,10 +119,10 @@ public class WorkService {
 
         freelancerWorkService = freelancerWorkRepository.save(freelancerWorkService);
 
-        return modelMapper.map(freelancerWorkService, GetFreelancerWorkDto.class);
+        return modelMapper.map(freelancerWorkService, GetDetailFreelancerWorkDto.class);
     }
 
-    public List<GetFreelancerWorkDto> getAllFreelancersByWork(String id, String postId){
+    public List<GetDetailFreelancerWorkDto> getAllFreelancersByWork(String id, String postId){
         List<FreelancerWorkService> freelancerWorkServices;
 
         if(id == null){
@@ -125,7 +154,7 @@ public class WorkService {
 
 
         return freelancerWorkServices.stream().map(
-                freelancerWorkService -> modelMapper.map(freelancerWorkService, GetFreelancerWorkDto.class)
+                freelancerWorkService -> modelMapper.map(freelancerWorkService, GetDetailFreelancerWorkDto.class)
         ).toList();
     }
 

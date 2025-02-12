@@ -41,16 +41,20 @@ public class TestService {
         );
     }
 
+    public TestResult getTestResultById(String id){
+        return testResultRepository.findById(id).orElseThrow(
+                () -> new AppException(StatusCode.TEST_RESULT_NOT_FOUND)
+        );
+    }
+
     public GetTestResultDto doTest(String testId, CreateTestResultDto createTestResultDto){
         Test test = getTestById(testId);
-        User freelancer = userService.getByIdAndRole(createTestResultDto.getFreelancerId(), UserRole.FREELANCER);
         TestResult testResult = modelMapper.map(createTestResultDto, TestResult.class);
 
         AtomicInteger point = new AtomicInteger();
         AtomicInteger numOfCorrect = new AtomicInteger();
 
         testResult.setTest(test);
-        testResult.setFreelancer(freelancer);
 
         Set<AnswerForQuestion> answerForQuestions  = createTestResultDto.getAnswerForQuestions().stream().map(
                 answerDto -> {
@@ -90,6 +94,17 @@ public class TestService {
 
         return modelMapper.map(finalTestResult, GetTestResultDto.class);
     }
+
+//    public GetTestResultDto getTestResult(String testId, String freelancerId){
+//        Test test = getTestById(testId);
+//        User freelancer = userService.getByIdAndRole(freelancerId, UserRole.FREELANCER);
+//
+//        TestResult testResult = test.getTestResults().stream().filter(tR -> tR.getFreelancer().getId().equals(freelancer.getId()) && !tR.isDeleted()).findFirst().orElseThrow(
+//                ()->new AppException(StatusCode.TEST_RESULT_NOT_FOUND)
+//        );
+//
+//        return modelMapper.map(testResult, GetTestResultDto.class);
+//    }
 
     public List<GetQuestionDto> getQuestionsByTestId(String testId, Integer questionCount){
         Test test = getTestById(testId);

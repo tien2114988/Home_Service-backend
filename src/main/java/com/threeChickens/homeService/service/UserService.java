@@ -8,28 +8,37 @@ import com.threeChickens.homeService.dto.auth.SignUpDto;
 import com.threeChickens.homeService.dto.address.CreateAddressDto;
 import com.threeChickens.homeService.dto.googleAuth.GoogleSignupDto;
 import com.threeChickens.homeService.dto.googleAuth.UserInfoDto;
+import com.threeChickens.homeService.dto.notification.GetNotificationDto;
+import com.threeChickens.homeService.dto.payment.PayOsDto;
+import com.threeChickens.homeService.dto.payment.PayOsWebhookDataDto;
+import com.threeChickens.homeService.dto.user.GetUserDetailDto;
 import com.threeChickens.homeService.dto.user.GetUserDto;
+import com.threeChickens.homeService.dto.user.PaymentHistoryDto;
 import com.threeChickens.homeService.dto.user.UpdateUserDto;
-import com.threeChickens.homeService.entity.Address;
-import com.threeChickens.homeService.entity.User;
-import com.threeChickens.homeService.entity.Ward;
-import com.threeChickens.homeService.enums.AccountType;
-import com.threeChickens.homeService.enums.Gender;
-import com.threeChickens.homeService.enums.UserRole;
-import com.threeChickens.homeService.enums.UserStatus;
+import com.threeChickens.homeService.dto.work.GetFreelancerWorkDto;
+import com.threeChickens.homeService.entity.*;
+import com.threeChickens.homeService.enums.*;
 import com.threeChickens.homeService.exception.AppException;
 import com.threeChickens.homeService.exception.StatusCode;
-import com.threeChickens.homeService.repository.UserRepository;
+import com.threeChickens.homeService.repository.*;
+import com.threeChickens.homeService.utils.FileUploadUtil;
 import com.threeChickens.homeService.utils.JwtUtil;
+import com.threeChickens.homeService.utils.PayOsUtil;
 import com.threeChickens.homeService.utils.VietQrUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import vn.payos.type.CheckoutResponseData;
 
+import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,63 +56,33 @@ public class UserService {
     private ModelMapper modelMapper;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private JwtUtil jwtUtil;
 
-    public void initUsers(){
-        if(userRepository.count()==0){
-            User customer1 = User.builder()
-                    .name("Nguyễn Đại Tiến")
-                    .email("tien.nguyen2283@hcmut.edu.vn")
-                    .role(UserRole.CUSTOMER)
-                    .dob(new Date())
-                    .balance(1000000)
-                    .gender(Gender.MALE)
-                    .phoneNumber("0346066323")
-                    .reputationPoint(100)
-                    .status(UserStatus.ACTIVE)
-                    .build();
-            User freelancer1 = User.builder()
-                    .name("Tiến Nguyễn Đại")
-                    .email("tien.nguyen2283@hcmut.edu.vn")
-                    .role(UserRole.FREELANCER)
-                    .dob(new Date())
-                    .balance(1000000)
-                    .gender(Gender.MALE)
-                    .phoneNumber("0346066323")
-                    .reputationPoint(100)
-                    .status(UserStatus.ACTIVE)
-                    .build();
-            User freelancer2 = User.builder()
-                    .name("Trương Phước Thọ Nguyễn")
-                    .email("phuoctho150420@gmail.com")
-                    .role(UserRole.FREELANCER)
-                    .dob(new Date())
-                    .balance(6000000)
-                    .gender(Gender.MALE)
-                    .phoneNumber("0123456789")
-                    .reputationPoint(100)
-                    .status(UserStatus.ACTIVE)
-                    .build();
-            User freelancer3 = User.builder()
-                    .name("Tiến Dũng Bùi")
-                    .email("dung.buitiendung03@hcmut.edu.vn")
-                    .role(UserRole.FREELANCER)
-                    .dob(new Date())
-                    .balance(5000000)
-                    .gender(Gender.MALE)
-                    .phoneNumber("0123456789")
-                    .reputationPoint(100)
-                    .status(UserStatus.ACTIVE)
-                    .build();
+    @Autowired
+    private FileUploadUtil fileUploadUtil;
 
-            userRepository.save(customer1);
-            userRepository.save(freelancer1);
-            userRepository.save(freelancer2);
-            userRepository.save(freelancer3);
-        }
+    @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
+    private PayOsUtil payOsUtil;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Value("${payment.minAmount}")
+    private int minAmount;
+    @Autowired
+    private UserNotificationRepository userNotificationRepository;
+    @Autowired
+    private PaymentHistoryRepository paymentHistoryRepository;
+
+    public String updateAvatar(String id, MultipartFile avatar) {
+        User user = getByIdAndRole(id, null);
+        String filePath = fileUploadUtil.saveImage(avatar, id);
+        user.setAvatar(filePath);
+        user = userRepository.save(user);
+        return user.getAvatar();
     }
 
     public User getByIdAndRole(String id, UserRole role){
@@ -117,9 +96,19 @@ public class UserService {
         );
     }
 
-    public GetUserDto getUserByEmail(LoginDto loginDto){
-        User user = userRepository.findByEmailAndDeletedIsFalse(loginDto.getEmail()).orElseThrow(() -> new AppException(StatusCode.EMAIL_NOT_FOUND));
+    public GetUserDetailDto getUserByIdAndRole(String id, String role){
+        try {
+            User user = getByIdAndRole(id, role != null ? UserRole.valueOf(role) : null);
+            return modelMapper.map(user, GetUserDetailDto.class);
+        }catch (IllegalArgumentException e) {
+            throw new AppException(StatusCode.ROLE_INVALID);
+        }
+    }
 
+    public GetUserDetailDto getUserByEmail(LoginDto loginDto){
+        User user = userRepository.findByEmailAndDeletedIsFalse(loginDto.getEmail()).orElseThrow(() -> new AppException(StatusCode.EMAIL_NOT_FOUND));
+        user.setFirebaseToken(loginDto.getFirebaseToken());
+        user = userRepository.save(user);
 //        boolean isValid = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
 
 //        if(!isValid){
@@ -127,7 +116,7 @@ public class UserService {
 //        }
 
         String jwt = jwtUtil.generateToken(user.getId(), user.getRole().toString());
-        GetUserDto getUserDto = modelMapper.map(user, GetUserDto.class);
+        GetUserDetailDto getUserDto = modelMapper.map(user, GetUserDetailDto.class);
         getUserDto.setJwt(jwt);
 
         return getUserDto;
@@ -155,19 +144,19 @@ public class UserService {
         }
     }
 
-    public GetUserDto getUserByJwt(String jwt) throws ParseException, JOSEException {
+    public GetUserDetailDto getUserByJwt(String jwt) throws ParseException, JOSEException {
         jwtUtil.verifyToken(jwt);
 
         String userId = jwtUtil.getUserIdFromJWT(jwt);
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(StatusCode.USER_NOT_FOUND));
 
-        GetUserDto getUserDto = modelMapper.map(user, GetUserDto.class);
+        GetUserDetailDto getUserDto = modelMapper.map(user, GetUserDetailDto.class);
         getUserDto.setJwt(jwt);
 
         return getUserDto;
     }
 
-    public GetUserDto createUser(SignUpDto signUpDto) {
+    public GetUserDetailDto createUser(SignUpDto signUpDto) {
         User user = modelMapper.map(signUpDto,User.class);
 
 //        String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -181,16 +170,17 @@ public class UserService {
 
         user.setReputationPoint(100);
         user.setAccountType(AccountType.EMAIL);
+        user.setStatus(UserStatus.ACTIVE);
 
         user = userRepository.save(user);
 
-        GetUserDto getUserDto = modelMapper.map(user,GetUserDto.class);
+        GetUserDetailDto getUserDto = modelMapper.map(user,GetUserDetailDto.class);
         String jwt = jwtUtil.generateToken(user.getId(), user.getRole().toString());
         getUserDto.setJwt(jwt);
         return getUserDto;
     }
 
-    public GetUserDto getUserByGoogle(UserInfoDto userInfoDto){
+    public GetUserDetailDto getUserByGoogle(UserInfoDto userInfoDto){
         User user = userRepository.findByEmailAndDeletedIsFalse(userInfoDto.getEmail()).orElse(
                 User.builder().email(userInfoDto.getEmail())
                         .name(userInfoDto.getName())
@@ -200,7 +190,7 @@ public class UserService {
         );
 
 
-        GetUserDto getUserDto = modelMapper.map(user, GetUserDto.class);
+        GetUserDetailDto getUserDto = modelMapper.map(user, GetUserDetailDto.class);
         if(user.getId()!=null){
             String jwt = jwtUtil.generateToken(user.getId(), user.getRole().toString());
             getUserDto.setJwt(jwt);
@@ -208,7 +198,7 @@ public class UserService {
         return getUserDto;
     }
 
-    public GetUserDto createUserByGoogle(GoogleSignupDto googleSignupDto){
+    public GetUserDetailDto createUserByGoogle(GoogleSignupDto googleSignupDto){
         User user = modelMapper.map(googleSignupDto,User.class);
 
         user.setReputationPoint(100);
@@ -216,24 +206,32 @@ public class UserService {
 
         user = userRepository.save(user);
 
-        GetUserDto getUserDto = modelMapper.map(user,GetUserDto.class);
+        GetUserDetailDto getUserDto = modelMapper.map(user,GetUserDetailDto.class);
         String jwt = jwtUtil.generateToken(user.getId(), user.getRole().toString());
         getUserDto.setJwt(jwt);
         return getUserDto;
     }
 
     //user_info
-    public List<GetUserDto> getUsers(){
-        List<User> users = userRepository.findAllByDeletedIsFalse();
-        return users.stream().map(user-> {
-                    GetUserDto getUserDto = modelMapper.map(user, GetUserDto.class);
-                    getUserDto.setAddresses(
-                            getUserDto.getAddresses().stream().filter(
-                                    address -> !address.isDeleted()
-                            ).collect(Collectors.toSet())
-                    );
-                    return getUserDto;
-                }
+    public List<GetUserDto> getUsers(int page, int size, String sortBy, String sortDirection, String role, String postId){
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        List<User> users;
+
+        if(role!=null &&  postId !=null){
+            Post post = postRepository.findByIdAndDeletedIsFalse(postId).orElseThrow(() -> new AppException(StatusCode.POST_NOT_FOUND));
+            try {
+                users = userRepository.findFreelancersByPostId(post.getWork().getId(), FreelancerWorkStatus.WORK,UserStatus.PROHIBITIVE, UserRole.valueOf(role), pageable).getContent();
+            }catch (IllegalArgumentException e) {
+                throw new AppException(StatusCode.ROLE_INVALID);
+            }
+        }else{
+            users = userRepository.findAllByDeletedIsFalse(pageable).getContent();
+        }
+
+        return users.stream().map(
+                user-> modelMapper.map(user, GetUserDto.class)
         ).toList();
     }
 
@@ -263,5 +261,77 @@ public class UserService {
 
     public GetAddressDto updateAddress(String addressId, CreateAddressDto updateAddressDto){
         return addressService.update(addressId, updateAddressDto);
+    }
+
+    public String recharge(String id, PayOsDto payOsDto) throws Exception {
+        User user = getByIdAndRole(id, null);
+
+        if(payOsDto.getAmount() < minAmount){
+            throw new RuntimeException("Nạp tối thiểu "+ NumberFormat.getInstance(Locale.US).format(minAmount)  + " VND");
+        }
+
+        CheckoutResponseData checkoutResponseData = payOsUtil.createPaymentLink(payOsDto);
+        Payment payment = Payment.builder().amount(payOsDto.getAmount()).orderCode(checkoutResponseData.getOrderCode()).user(user).build();
+
+        paymentRepository.save(payment);
+        return checkoutResponseData.getCheckoutUrl();
+    }
+
+    public GetUserDetailDto withdraw(String id, PayOsDto payOsDto){
+        User user = getByIdAndRole(id, null);
+        if(user.getBalance() < payOsDto.getAmount()){
+            throw new AppException(StatusCode.BALANCE_NOT_ENOUGH);
+        }
+        user.setBalance(user.getBalance()-payOsDto.getAmount());
+        user = userRepository.save(user);
+        PaymentHistory paymentHistory = PaymentHistory.builder().amount(-payOsDto.getAmount()).refId(UUID.randomUUID().toString()).user(user).build();
+        paymentHistoryRepository.save(paymentHistory);
+        return modelMapper.map(user, GetUserDetailDto.class);
+    }
+
+    public void handleRecharge(PayOsWebhookDataDto data) throws Exception {
+        System.out.println("PayOS webhook");
+        Payment payment = paymentRepository.findByOrderCode(data.getOrderCode()).orElseThrow(
+                ()-> new AppException(StatusCode.ORDER_CODE_NOT_FOUND)
+        );
+        String status = payOsUtil.getPaymentLinkData(payment.getOrderCode());
+        if(status.equals("PAID")){
+            System.out.println("PAID");
+            User user = payment.getUser();
+            user.setBalance(user.getBalance() + payment.getAmount());
+            userRepository.save(user);
+            PaymentHistory paymentHistory = PaymentHistory.builder().amount(payment.getAmount()).refId(data.getReference()).user(user).build();
+            paymentHistoryRepository.save(paymentHistory);
+        }
+    }
+
+    public List<GetNotificationDto> getNotificationsByUserId(String id){
+        User user = getByIdAndRole(id, null);
+        return user.getNotifications().stream()
+                .sorted((n1, n2) -> n2.getNotification().getCreatedAt().compareTo(n1.getNotification().getCreatedAt()))
+                .map(notification -> modelMapper.map(notification ,GetNotificationDto.class)).toList();
+    }
+
+    public List<PaymentHistoryDto> getPaymentHistoriesByUserId(String id){
+        User user = getByIdAndRole(id, null);
+        return user.getPaymentHistories().stream()
+                .sorted(Comparator.comparing(PaymentHistory::getCreatedAt).reversed())
+                .map(paymentHistory -> modelMapper.map(paymentHistory ,PaymentHistoryDto.class)).toList();
+    }
+
+
+    public void viewNotification(String id){
+        UserNotification userNotification = userNotificationRepository.findById(id).orElseThrow(
+                () -> new AppException(StatusCode.NOTIFICATION_NOT_FOUND)
+        );
+        userNotification.setView(true);
+        userNotificationRepository.save(userNotification);
+    }
+
+    public List<GetFreelancerWorkDto> getWorksByFreelancerId(String id){
+        User freelancer = getByIdAndRole(id, UserRole.FREELANCER);
+        return freelancer.getFreelancerWorkServices().stream().map(
+                freelancerWorkService -> modelMapper.map(freelancerWorkService, GetFreelancerWorkDto.class)
+        ).toList();
     }
 }

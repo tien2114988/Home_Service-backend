@@ -1,4 +1,4 @@
-package com.threeChickens.homeService.dto.post;
+package com.threeChickens.homeService.dto.workSchedule;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

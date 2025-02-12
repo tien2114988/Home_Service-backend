@@ -99,12 +99,17 @@ public class BankService {
         return vietQrUtil.lookup(createBankAccountDto);
     }
 
+    public Bank getByBin(String bin){
+        return bankRepository.findFirstByBin(bin).orElseThrow(
+                () -> new AppException(StatusCode.BANK_NOT_FOUND)
+        );
+    }
+
+
     public void updateBankAccountForUser(User user, CreateBankAccountDto createBankAccountDto) throws Exception {
         BankAccount bankAccount = user.getBankAccount();
 
-        Bank bank = bankRepository.findFirstByBin(createBankAccountDto.getBin()+"").orElseThrow(
-                () -> new AppException(StatusCode.BANK_NOT_FOUND)
-        );
+        Bank bank = getByBin(createBankAccountDto.getBin()+"");
         String bankAccountName = vietQrUtil.lookup(createBankAccountDto);
 
         bankAccount.setAccountName(bankAccountName);

@@ -1,7 +1,7 @@
-package com.threeChickens.homeService.dto.post;
+package com.threeChickens.homeService.dto.work;
 
+import com.threeChickens.homeService.dto.test.GetTestResultDto;
 import com.threeChickens.homeService.dto.user.GetUserDto;
-import com.threeChickens.homeService.enums.TakePostStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +13,12 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetTakePostDto {
+public class FreelancerWorkDto {
     private String id;
-    private TakePostStatus status;
-    private GetUserDto freelancer;
+    private String status;
+    private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private GetWorkDto work;
+//    private GetTestResultDto testResult;
 }

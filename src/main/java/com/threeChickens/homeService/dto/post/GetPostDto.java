@@ -5,7 +5,7 @@ import com.threeChickens.homeService.dto.babysitting.BabysittingDto;
 import com.threeChickens.homeService.dto.houseCleaning.HouseCleaningDto;
 import com.threeChickens.homeService.dto.user.GetUserDto;
 import com.threeChickens.homeService.dto.work.GetWorkDto;
-import com.threeChickens.homeService.entity.Babysitting;
+import com.threeChickens.homeService.dto.workSchedule.GetWorkScheduleDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Builder
@@ -23,7 +23,6 @@ public class GetPostDto {
     private String id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String customerNote;
     private Time startTime;
     private int duration;
     private long price;
@@ -38,10 +37,12 @@ public class GetPostDto {
     private boolean chooseFreelancer;
 
     private GetUserDto customer;
-    private Set<GetWorkScheduleDto> workSchedules;
+    private List<GetWorkScheduleDto> workSchedules;
+    private GetWorkScheduleDto workSchedule;
     private GetWorkDto work;
     private HouseCleaningDto houseCleaning;
     private BabysittingDto babysitting;
     private GetAddressDto address;
-    private Set<GetTakePostDto> freelancerTakePosts;
+//    private Set<FreelancerTakeDto> freelancerTakePosts;
+//    private Set<GetRateDto> rates;
 }

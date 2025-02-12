@@ -13,4 +13,5 @@ import lombok.NoArgsConstructor;
 public class CreateFreelancerWorkDto {
     private String status;
     private String description;
+    private String testResultId;
 }

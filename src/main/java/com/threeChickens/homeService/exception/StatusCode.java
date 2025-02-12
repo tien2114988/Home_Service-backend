@@ -48,6 +48,10 @@ public enum StatusCode {
     TEST_NOT_FOUND(-1315, "Bài kiểm tra không tồn tại", HttpStatus.BAD_REQUEST),
     QUESTION_NOT_FOUND(-1316, "Câu hỏi không tồn tại", HttpStatus.BAD_REQUEST),
     CHOICE_NOT_FOUND(-1317, "Lựa chọn không tồn tại", HttpStatus.BAD_REQUEST),
+    TEST_RESULT_NOT_FOUND(-1318, "Kết quả bài kiểm tra không tồn tại", HttpStatus.BAD_REQUEST),
+    FREELANCER_WORK_NOT_FOUND(-1319, "Không tìm thấy freelancer làm trên dịch vụ này", HttpStatus.BAD_REQUEST),
+    WORK_SCHEDULE_NOT_FOUND(-1320, "Không tìm thấy lịch làm việc", HttpStatus.BAD_REQUEST),
+    ORDER_CODE_NOT_FOUND(-1321, "Không tìm thấy mã thanh toán", HttpStatus.BAD_REQUEST),
 
     EXPIRED_OTP(-1400,"OTP hết hạn", HttpStatus.BAD_REQUEST),
     NOT_VERIFY(-1401, "Tài khoản ngân hàng không hợp lệ", HttpStatus.BAD_REQUEST),
@@ -67,6 +71,9 @@ public enum StatusCode {
 
     MISSING_HOUSE_CLEANING(-1600, "Thiếu tham số House Cleaning", HttpStatus.BAD_REQUEST),
     MISSING_BABYSITTING(-1601, "Thiếu tham số Babysitting", HttpStatus.BAD_REQUEST),
+
+    BALANCE_NOT_ENOUGH(-1700, "Số dư tài khoản của bạn không đủ", HttpStatus.BAD_REQUEST),
+    USER_PROHIBITIVE(-1701, "Người dùng đã bị cấm", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

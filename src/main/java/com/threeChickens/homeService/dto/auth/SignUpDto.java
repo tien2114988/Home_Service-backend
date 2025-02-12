@@ -29,4 +29,6 @@ public class SignUpDto {
 
     @NotNull(message = "Otp must not be null")
     private String otp;
+
+    private String firebaseToken;
 }

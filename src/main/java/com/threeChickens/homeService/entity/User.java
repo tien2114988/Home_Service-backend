@@ -34,6 +34,8 @@ public class User {
 
     private String email;
 
+    private String firebaseToken;
+
 //    private String password;
 
     @CreatedDate
@@ -66,29 +68,32 @@ public class User {
     private boolean deleted;
 
     @OneToMany(mappedBy="user")
-    private Set<Address> addresses = new HashSet<>();;
+    private Set<Address> addresses = new HashSet<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private BankAccount bankAccount;
 
     @OneToMany(mappedBy="customer")
-    private Set<Post> posts = new HashSet<>();;
-
-    @OneToMany(mappedBy="freelancer")
-    private Set<TestResult> testResults = new HashSet<>();;
-
-    @ManyToMany
-    private Set<Notification> notifications = new HashSet<>();;
+    private Set<Post> posts = new HashSet<>();
 
     @OneToMany(mappedBy = "freelancer")
-    private Set<FreelancerTakePost> freelancerTakePosts = new HashSet<>();;
+    private Set<FreelancerTakePost> freelancerTakePosts = new HashSet<>();
 
     @OneToMany(mappedBy = "freelancer")
-    private Set<FreelancerWorkService> freelancerWorkServices = new HashSet<>();;
+    private Set<FreelancerWorkService> freelancerWorkServices = new HashSet<>();
 
-    @OneToMany(mappedBy = "freelancer")
-    private Set<Rate> receivedRates = new HashSet<>();
+    @OneToMany(mappedBy="user")
+    private Set<UserNotification> notifications = new HashSet<>();
 
-    @OneToMany(mappedBy="customer")
-    private Set<Rate> rates = new HashSet<>();;
+    @OneToMany(mappedBy="user")
+    private Set<Payment> payments = new HashSet<>();
+
+    @OneToMany(mappedBy="user")
+    private Set<PaymentHistory> paymentHistories = new HashSet<>();
+
+//    @OneToMany(mappedBy = "freelancer")
+//    private Set<Rate> rates = new HashSet<>();
+
+//    @OneToMany(mappedBy="customer")
+//    private Set<Rate> rates = new HashSet<>();
 }

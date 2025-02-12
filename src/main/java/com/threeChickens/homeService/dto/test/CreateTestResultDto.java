@@ -22,7 +22,5 @@ public class CreateTestResultDto {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    private String freelancerId;
-
     private Set<CreateAnswerDto> answerForQuestions;
 }

@@ -42,6 +42,14 @@ public class TestController {
         return ResponseEntity.ok(res);
     }
 
+//    @GetMapping("/{id}/freelancers/{freelancerId}/testResults")
+//    @Operation(summary = "Do test")
+//    public ResponseEntity<ApiResponse<GetTestResultDto>> getTestResult(@PathVariable("id") String id, @PathVariable("freelancerId") String freelancerId) throws Exception {
+//        GetTestResultDto getTestResultDto = testService.getTestResult(id, freelancerId);
+//        ApiResponse<GetTestResultDto> res = ApiResponse.<GetTestResultDto>builder().items(getTestResultDto).build();
+//        return ResponseEntity.ok(res);
+//    }
+
 //    @PostMapping("/questions/{id}/choices")
 //    @Operation(summary = "Add a choice for a question")
 //    public ResponseEntity<ApiResponse<GetChoiceDto>> addChoice(@PathVariable("id") String id, @RequestBody CreateChoiceDto createChoiceDto) throws Exception {

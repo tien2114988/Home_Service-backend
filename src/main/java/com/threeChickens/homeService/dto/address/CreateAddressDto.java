@@ -25,7 +25,12 @@ public class CreateAddressDto {
 
     @NotNull(message = "Place id must not be null")
     private String placeId;
-//    private float latitude;
-//    private float longitude;
+
+    @NotNull(message = "Latitude must not be null")
+    private float latitude;
+
+    @NotNull(message = "Longitude must not be null")
+    private float longitude;
+
     private boolean isDefault;
 }

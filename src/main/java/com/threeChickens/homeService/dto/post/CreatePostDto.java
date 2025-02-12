@@ -2,6 +2,7 @@ package com.threeChickens.homeService.dto.post;
 
 import com.threeChickens.homeService.dto.babysitting.BabysittingDto;
 import com.threeChickens.homeService.dto.houseCleaning.HouseCleaningDto;
+import com.threeChickens.homeService.dto.workSchedule.CreateWorkScheduleDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

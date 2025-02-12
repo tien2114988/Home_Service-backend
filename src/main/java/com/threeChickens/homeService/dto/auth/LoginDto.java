@@ -24,4 +24,6 @@ public class LoginDto {
 
     @NotNull(message = "Otp must not be null")
     private String otp;
+
+    private String firebaseToken;
 }
