@@ -53,6 +53,7 @@ public class TestService {
 
         AtomicInteger point = new AtomicInteger();
         AtomicInteger numOfCorrect = new AtomicInteger();
+        AtomicInteger numOfMultiChoice = new AtomicInteger();
 
         testResult.setTest(test);
 
@@ -76,6 +77,7 @@ public class TestService {
                         boolean right = Objects.equals(choice.getId(), rightChoice.getId());
                         point.addAndGet(right ? 1 : 0);
                         numOfCorrect.addAndGet(right ? 1 : 0);
+                        numOfMultiChoice.addAndGet(1);
                         answerForQuestion.setChoice(choice);
                         answerForQuestion.setCorrect(right);
                     }else{
@@ -89,6 +91,7 @@ public class TestService {
         testResult.setAnswerForQuestions(answerForQuestions);
         testResult.setNumOfCorrectAnswers(numOfCorrect.get());
         testResult.setPoint(point.get());
+        testResult.setPassed((float) numOfCorrect.get() >= (float) 1/2 * numOfMultiChoice.get());
 
         TestResult finalTestResult = testResultRepository.save(testResult);
 
