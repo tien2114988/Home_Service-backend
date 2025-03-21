@@ -9,6 +9,7 @@ import com.threeChickens.homeService.dto.address.CreateAddressDto;
 import com.threeChickens.homeService.dto.googleAuth.GoogleSignupDto;
 import com.threeChickens.homeService.dto.googleAuth.UserInfoDto;
 import com.threeChickens.homeService.dto.notification.GetNotificationDto;
+import com.threeChickens.homeService.dto.notification.RedisNotificationDto;
 import com.threeChickens.homeService.dto.payment.PayOsDto;
 import com.threeChickens.homeService.dto.payment.PayOsWebhookDataDto;
 import com.threeChickens.homeService.dto.user.GetUserDetailDto;
@@ -21,10 +22,8 @@ import com.threeChickens.homeService.enums.*;
 import com.threeChickens.homeService.exception.AppException;
 import com.threeChickens.homeService.exception.StatusCode;
 import com.threeChickens.homeService.repository.*;
-import com.threeChickens.homeService.utils.FileUploadUtil;
-import com.threeChickens.homeService.utils.JwtUtil;
-import com.threeChickens.homeService.utils.PayOsUtil;
-import com.threeChickens.homeService.utils.VietQrUtil;
+import com.threeChickens.homeService.utils.*;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +68,9 @@ public class UserService {
 
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private ListRedisUtil<RedisNotificationDto> listRedisUtil;
 
     @Value("${payment.minAmount}")
     private int minAmount;
@@ -277,6 +279,7 @@ public class UserService {
         return checkoutResponseData.getCheckoutUrl();
     }
 
+    @Transactional
     public GetUserDetailDto withdraw(String id, PayOsDto payOsDto){
         User user = getByIdAndRole(id, null);
         if(user.getBalance() < payOsDto.getAmount()){
@@ -305,11 +308,9 @@ public class UserService {
         }
     }
 
-    public List<GetNotificationDto> getNotificationsByUserId(String id){
+    public List<RedisNotificationDto> getNotificationsByUserId(String id){
         User user = getByIdAndRole(id, null);
-        return user.getNotifications().stream()
-                .sorted((n1, n2) -> n2.getNotification().getCreatedAt().compareTo(n1.getNotification().getCreatedAt()))
-                .map(notification -> modelMapper.map(notification ,GetNotificationDto.class)).toList();
+        return listRedisUtil.getList(user.getId());
     }
 
     public List<PaymentHistoryDto> getPaymentHistoriesByUserId(String id){
@@ -319,13 +320,11 @@ public class UserService {
                 .map(paymentHistory -> modelMapper.map(paymentHistory ,PaymentHistoryDto.class)).toList();
     }
 
-
-    public void viewNotification(String id){
-        UserNotification userNotification = userNotificationRepository.findById(id).orElseThrow(
-                () -> new AppException(StatusCode.NOTIFICATION_NOT_FOUND)
-        );
-        userNotification.setView(true);
-        userNotificationRepository.save(userNotification);
+    public void viewNotification(String userId, int id){
+        User user = getByIdAndRole(userId, null);
+        RedisNotificationDto redisNotificationDto = listRedisUtil.getValueById(user.getId(), id);
+        redisNotificationDto.setView(true);
+        listRedisUtil.updateListById(user.getId(), id, redisNotificationDto);
     }
 
     public List<GetFreelancerWorkDto> getWorksByFreelancerId(String id){

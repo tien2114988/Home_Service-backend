@@ -6,6 +6,7 @@ import com.threeChickens.homeService.dto.ApiResponse;
 import com.threeChickens.homeService.dto.address.CreateAddressDto;
 import com.threeChickens.homeService.dto.address.GetAddressDto;
 import com.threeChickens.homeService.dto.notification.GetNotificationDto;
+import com.threeChickens.homeService.dto.notification.RedisNotificationDto;
 import com.threeChickens.homeService.dto.payment.PayOsDto;
 import com.threeChickens.homeService.dto.post.GetPostDto;
 import com.threeChickens.homeService.dto.user.GetUserDetailDto;
@@ -76,9 +77,9 @@ public class UserController {
 
     @GetMapping("/{id}/notifications")
     @Operation(summary = "Get notifications for user")
-    public ResponseEntity<ApiResponse<List<GetNotificationDto>>> getNotifications(@PathVariable("id") String id) {
-        List<GetNotificationDto> notifications = userService.getNotificationsByUserId(id);
-        ApiResponse<List<GetNotificationDto>> res = ApiResponse.<List<GetNotificationDto>>builder().items(notifications).build();
+    public ResponseEntity<ApiResponse<List<RedisNotificationDto>>> getNotifications(@PathVariable("id") String id) {
+        List<RedisNotificationDto> notifications = userService.getNotificationsByUserId(id);
+        ApiResponse<List<RedisNotificationDto>> res = ApiResponse.<List<RedisNotificationDto>>builder().items(notifications).build();
         return ResponseEntity.ok(res);
     }
 
@@ -90,10 +91,10 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @PutMapping("/notifications/{id}")
+    @PutMapping("/{userId}/notifications/{id}")
     @Operation(summary = "View a notification")
-    public ResponseEntity<ApiResponse<?>> viewNotification(@PathVariable("id") String id) {
-        userService.viewNotification(id);
+    public ResponseEntity<ApiResponse<?>> viewNotification(@PathVariable("userId") String userId, @PathVariable int id) {
+        userService.viewNotification(userId, id);
         ApiResponse<?> res = ApiResponse.builder().build();
         return ResponseEntity.ok(res);
     }

@@ -51,7 +51,7 @@ public class WorkController {
 
     @GetMapping("/freelancers")
     @Operation(summary = "Get requests of freelancers on subcribing to service")
-    public ResponseEntity<ApiResponse<List<GetDetailFreelancerWorkDto>>> getAllFreelancer(@RequestParam(required = false) String id, @RequestParam(required = false) String postId) {
+    public ResponseEntity<ApiResponse<List<GetDetailFreelancerWorkDto>>> getAllFreelancer(@RequestParam(required = false) String id, @RequestParam(required = false) String postId) throws JsonProcessingException {
         List<GetDetailFreelancerWorkDto> getDetailFreelancerWorkDtos = workService.getAllFreelancersByWork(id, postId);
         ApiResponse<List<GetDetailFreelancerWorkDto>> res = ApiResponse.<List<GetDetailFreelancerWorkDto>>builder().items(getDetailFreelancerWorkDtos).build();
         return ResponseEntity.ok(res);

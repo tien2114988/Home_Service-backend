@@ -159,8 +159,6 @@ public class WorkService {
                             freelancerWorkService.getStatus() == FreelancerWorkStatus.INITIAL ? 0 : 1))
                     .collect(Collectors.toList());
         }
-
-
         return freelancerWorkServices.stream().map(
                 freelancerWorkService -> modelMapper.map(freelancerWorkService, GetDetailFreelancerWorkDto.class)
         ).toList();

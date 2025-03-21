@@ -2,6 +2,7 @@ package com.threeChickens.homeService.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.threeChickens.homeService.dto.bankHub.CancelPostDto;
+import com.threeChickens.homeService.dto.notification.RedisNotificationDto;
 import com.threeChickens.homeService.dto.post.*;
 import com.threeChickens.homeService.dto.rate.CreateRateDto;
 import com.threeChickens.homeService.dto.takePost.CreateTakePostDto;
@@ -16,6 +17,7 @@ import com.threeChickens.homeService.middleware.UserMiddleware;
 import com.threeChickens.homeService.repository.*;
 import com.threeChickens.homeService.utils.FileUploadUtil;
 import com.threeChickens.homeService.utils.FirebaseUtil;
+import com.threeChickens.homeService.utils.ListRedisUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -62,8 +65,12 @@ public class PostService {
 
     @Autowired
     private UserNotificationRepository userNotificationRepository;
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ListRedisUtil<RedisNotificationDto> redisUtil;
 
 
     public Post getPostById(String id, boolean isCheck){
@@ -175,16 +182,20 @@ public class PostService {
             }
             String title = "Đã có freelancer nhận việc";
             String body = freelancer.getName() + " đã nhận công việc " + jobType + " mà bạn đăng";
-            Notification notification = Notification.builder().title(title).content(body).post(post).build();
-            UserNotification userNotification = UserNotification.builder().user(post.getCustomer()).notification(notification).build();
-            userNotificationRepository.save(userNotification);
+//            Notification notification = Notification.builder().title(title).content(body).post(post).build();
+//            UserNotification userNotification = UserNotification.builder().user(post.getCustomer()).notification(notification).build();
+//            userNotificationRepository.save(userNotification);
+            RedisNotificationDto redisNotificationDto = RedisNotificationDto.builder().id(redisUtil.size(post.getCustomer().getId())).postId(post.getId()).title(title).content(body).createdAt(LocalDateTime.now()).build();
+            redisUtil.addToList(post.getCustomer().getId(), redisNotificationDto);
             firebaseUtil.sendNotification(post.getCustomer().getFirebaseToken(), title, body );
         }else if (Objects.equals(createTakePostDto.getStatus(), TakePostStatus.PENDING.toString())){
             String title = "Bạn có 1 yêu cầu công việc mới";
             String body = post.getCustomer().getName() + " đã gửi yêu cầu công việc " + jobType +" đến bạn";
-            Notification notification = Notification.builder().title(title).content(body).post(post).build();
-            UserNotification userNotification = UserNotification.builder().user(post.getCustomer()).notification(notification).build();
-            userNotificationRepository.save(userNotification);
+//            Notification notification = Notification.builder().title(title).content(body).post(post).build();
+//            UserNotification userNotification = UserNotification.builder().user(post.getCustomer()).notification(notification).build();
+//            userNotificationRepository.save(userNotification);
+            RedisNotificationDto redisNotificationDto = RedisNotificationDto.builder().id(redisUtil.size(post.getCustomer().getId())).postId(post.getId()).title(title).content(body).createdAt(LocalDateTime.now()).build();
+            redisUtil.addToList(post.getCustomer().getId(), redisNotificationDto);
             firebaseUtil.sendNotification(freelancer.getFirebaseToken(), title, body );
         }
 
