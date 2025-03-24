@@ -33,6 +33,14 @@ public class WorkController {
         return ResponseEntity.ok(res);
     }
 
+    @GetMapping("/{id}/freelancers/{freelancerId}")
+    @Operation(summary = "Get detail freelancer work on service")
+    public ResponseEntity<ApiResponse<GetDetailFreelancerWorkDto>> getFreelancerWorkDetail(@PathVariable("id") String id, @PathVariable("freelancerId") String freelancerId) {
+        GetDetailFreelancerWorkDto getDetailFreelancerWorkDto = workService.getFreelancerWorkDetail(id, freelancerId);
+        ApiResponse<GetDetailFreelancerWorkDto> res = ApiResponse.<GetDetailFreelancerWorkDto>builder().items(getDetailFreelancerWorkDto).build();
+        return ResponseEntity.ok(res);
+    }
+
     @PutMapping(value="/freelancerWorkService/{id}/uploadImages", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Upload images for freelancer providing service")
     public ResponseEntity<ApiResponse<GetDetailFreelancerWorkDto>> uploadImages(@PathVariable("id") String id, @RequestParam("images") MultipartFile[] images) {

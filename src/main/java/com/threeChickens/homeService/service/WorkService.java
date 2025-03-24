@@ -91,6 +91,15 @@ public class WorkService {
         return modelMapper.map(finalFreelancerWorkService, GetDetailFreelancerWorkDto.class);
     }
 
+    public GetDetailFreelancerWorkDto getFreelancerWorkDetail(String workId, String freelancerId){
+        Work work = getWorkById(workId);
+        User freelancer = userService.getByIdAndRole(freelancerId, UserRole.FREELANCER);
+        FreelancerWorkService freelancerWorkService =  freelancerWorkRepository.findByWorkIdAndFreelancerId(work.getId(), freelancer.getId()).orElseThrow(
+                () -> new AppException(StatusCode.FREELANCER_WORK_NOT_FOUND)
+        );
+        return modelMapper.map(freelancerWorkService, GetDetailFreelancerWorkDto.class);
+    }
+
 
     public GetDetailFreelancerWorkDto provideService(String workId, String freelancerId, CreateFreelancerWorkDto createFreelancerWorkDto){
         Work work = getWorkById(workId);
