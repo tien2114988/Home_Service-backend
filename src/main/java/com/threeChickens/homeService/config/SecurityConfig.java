@@ -27,16 +27,18 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.authorizeHttpRequests(req -> req
-                .requestMatchers("**").permitAll()
+        httpSecurity.authorizeHttpRequests(req -> req.anyRequest().permitAll()).csrf(AbstractHttpConfigurer::disable);
+//                .requestMatchers("**").permitAll()
                 // Public
-                .requestMatchers(HttpMethod.GET,"/").permitAll()
-                .requestMatchers("/data").permitAll()
-                .requestMatchers("/api/test/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/larkEvent").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/payOs").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/bankHub").permitAll()
+//                .requestMatchers(HttpMethod.GET,"**").permitAll()
+//                .requestMatchers(HttpMethod.POST,"**").permitAll()
+//                .requestMatchers(HttpMethod.PUT,"**").permitAll()
+//                .requestMatchers("/data").permitAll()
+//                .requestMatchers("/api/test/**").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/api/larkEvent").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/api/payOs").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/api/bankHub").permitAll()
                 // Common
 //                .requestMatchers(HttpMethod.GET,"/api/attendance/**", "/api/staff/**", "/api/larkAccount/getLink").hasAnyAuthority("SCOPE_ADMIN", "SCOPE_STAFF")
 //                .requestMatchers("/api/bank/**").hasAnyAuthority("SCOPE_ADMIN", "SCOPE_STAFF")
@@ -57,7 +59,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 //                .requestMatchers(HttpMethod.POST,"/api/staff/**").hasAuthority("SCOPE_STAFF")
 //                .requestMatchers(HttpMethod.PUT,"/api/staff/updateBank").hasAuthority("SCOPE_STAFF")
                 // Swagger
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll());
+//                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll());
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder))
                 .authenticationEntryPoint(new AuthExceptionHandler()));

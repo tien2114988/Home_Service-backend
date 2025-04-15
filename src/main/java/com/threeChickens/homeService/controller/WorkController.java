@@ -9,6 +9,8 @@ import com.threeChickens.homeService.dto.work.GetDetailFreelancerWorkDto;
 import com.threeChickens.homeService.dto.work.GetWorkDto;
 import com.threeChickens.homeService.service.WorkService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,11 +43,19 @@ public class WorkController {
         return ResponseEntity.ok(res);
     }
 
-    @PutMapping(value="/freelancerWorkService/{id}/uploadImages", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(
+            value="/freelancerWorkService/{id}/uploadImages",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @Operation(summary = "Upload images for freelancer providing service")
-    public ResponseEntity<ApiResponse<GetDetailFreelancerWorkDto>> uploadImages(@PathVariable("id") String id, @RequestParam("images") MultipartFile[] images) {
+    public ResponseEntity<ApiResponse<GetDetailFreelancerWorkDto>> uploadImages(
+            @PathVariable("id") String id,
+            @Parameter(description = "Upload one or more image files", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+            @RequestPart("images") MultipartFile[] images
+    ) {
         GetDetailFreelancerWorkDto getDetailFreelancerWorkDto = workService.uploadImages(id, images);
-        ApiResponse<GetDetailFreelancerWorkDto> res =  ApiResponse.<GetDetailFreelancerWorkDto>builder().items(getDetailFreelancerWorkDto).build();
+        ApiResponse<GetDetailFreelancerWorkDto> res = ApiResponse.<GetDetailFreelancerWorkDto>builder().items(getDetailFreelancerWorkDto).build();
         return ResponseEntity.ok(res);
     }
 

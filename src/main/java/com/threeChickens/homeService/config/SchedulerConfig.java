@@ -3,6 +3,7 @@ package com.threeChickens.homeService.config;
 
 import com.threeChickens.homeService.service.BankService;
 import com.threeChickens.homeService.service.OtpService;
+import com.threeChickens.homeService.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,6 +15,9 @@ import java.time.LocalDateTime;
 public class SchedulerConfig {
     @Autowired
     private OtpService otpService;
+
+    @Autowired
+    private PostService postService;
 
     private final WebClient webClient;
 
@@ -27,6 +31,10 @@ public class SchedulerConfig {
         otpService.cleanupOtp();
     }
 
+    @Scheduled(fixedRate = 1800000)
+    public void checkLatePost(){
+        postService.checkLatePost();
+    }
 
     @Scheduled(fixedRate = 300000) // Run every 5 minutes
     public void reloadWebsite() {

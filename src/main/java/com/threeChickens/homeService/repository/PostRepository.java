@@ -7,6 +7,7 @@ import com.threeChickens.homeService.enums.PostStatus;
 import com.threeChickens.homeService.enums.TakePostStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -41,7 +42,8 @@ public interface PostRepository extends JpaRepository<Post, String> {
             @Param("longitude") float longitude,
             Pageable pageable
     );
-
+    @EntityGraph(attributePaths = "workSchedules")
+    List<Post> findAllByStatusInAndDeletedIsFalse(List<PostStatus> postStatuses);
     Page<Post> findAllByWorkInAndStatusIsAndDeletedIsFalse(List<Work> works, PostStatus postStatus ,Pageable pageable);
     Page<Post> findAllByDeletedIsFalse(Pageable pageable);
     Page<Post> findAllByCustomerIdAndWorkIdAndDeletedIsFalse(String customerId, String workId, Pageable pageable);

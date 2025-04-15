@@ -9,6 +9,7 @@ import com.threeChickens.homeService.enums.*;
 import com.threeChickens.homeService.exception.AppException;
 import com.threeChickens.homeService.exception.StatusCode;
 import com.threeChickens.homeService.repository.FreelancerWorkRepository;
+import com.threeChickens.homeService.repository.ImageRepository;
 import com.threeChickens.homeService.repository.WorkRepository;
 import com.threeChickens.homeService.utils.FileUploadUtil;
 import org.modelmapper.ModelMapper;
@@ -42,6 +43,9 @@ public class WorkService {
 
     @Autowired
     private FileUploadUtil fileUploadUtil;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     public List<GetWorkDto> getAllWorks(String freelancerId){
         List<Work> works = workRepository.findAll();
@@ -85,6 +89,7 @@ public class WorkService {
             Image freelancerWorkImage = Image.builder().link(filePath).freelancerWorkService(freelancerWorkService).build();
             freelancerWorkImages.add(freelancerWorkImage);
         });
+        imageRepository.saveAll(freelancerWorkImages);
         freelancerWorkService.setImages(freelancerWorkImages);
 
         FreelancerWorkService finalFreelancerWorkService = freelancerWorkRepository.save(freelancerWorkService);

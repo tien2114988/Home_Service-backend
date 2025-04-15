@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -71,6 +72,36 @@ public class PostService {
 
     @Autowired
     private ListRedisUtil<RedisNotificationDto> redisUtil;
+
+    public void checkLatePost(){
+        List<WorkScheduleStatus> workScheduleStatuses = List.of(WorkScheduleStatus.INITIAL, WorkScheduleStatus.DOING);
+        List<WorkSchedule> workSchedules = workScheduleRepository.findAllByStatusInAndDeletedIsFalse(workScheduleStatuses);
+        workSchedules = workSchedules.stream().peek(workSchedule -> {
+            LocalDate date = workSchedule.getDate();
+            Time time = workSchedule.getPost().getStartTime();
+            LocalDateTime startDateTime = LocalDateTime.of(date, time.toLocalTime());
+            LocalDateTime now = LocalDateTime.now();
+            if(startDateTime.plusMinutes(30).isBefore(now) && workSchedule.getStatus() == WorkScheduleStatus.INITIAL){
+                workSchedule.setStatus(WorkScheduleStatus.CANCELLED);
+            }else if(startDateTime.plusMinutes(30+workSchedule.getPost().getDuration()).isBefore(now) && workSchedule.getStatus() == WorkScheduleStatus.DOING){
+                workSchedule.setStatus(WorkScheduleStatus.COMPLETED);
+            }
+        }).toList();
+        workScheduleRepository.saveAll(workSchedules);
+        List<PostStatus> postStatuses = List.of(PostStatus.INITIAL, PostStatus.SCHEDULED, PostStatus.DOING);
+        List<Post> posts = postRepository.findAllByStatusInAndDeletedIsFalse(postStatuses);
+        posts = posts.stream().peek(post -> {
+            long failedCount = post.getWorkSchedules().stream()
+                    .filter(ws -> ws.getStatus() == WorkScheduleStatus.CANCELLED)
+                    .count();
+            if(failedCount > post.getWorkSchedules().size() / 2.0){
+                post.setStatus(PostStatus.FAILED);
+            } else if (post.getWorkSchedules().stream().noneMatch(ws -> List.of(WorkScheduleStatus.INITIAL, WorkScheduleStatus.DOING).contains(ws.getStatus()))) {
+                post.setStatus(PostStatus.COMPLETED);
+            }
+        }).toList();
+        postRepository.saveAll(posts);
+    }
 
 
     public Post getPostById(String id, boolean isCheck){
