@@ -51,8 +51,7 @@ public class WorkController {
     @Operation(summary = "Upload images for freelancer providing service")
     public ResponseEntity<ApiResponse<GetDetailFreelancerWorkDto>> uploadImages(
             @PathVariable("id") String id,
-            @Parameter(description = "Upload one or more image files", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-            @RequestPart("images") MultipartFile[] images
+            @RequestParam("images") MultipartFile[] images
     ) {
         GetDetailFreelancerWorkDto getDetailFreelancerWorkDto = workService.uploadImages(id, images);
         ApiResponse<GetDetailFreelancerWorkDto> res = ApiResponse.<GetDetailFreelancerWorkDto>builder().items(getDetailFreelancerWorkDto).build();

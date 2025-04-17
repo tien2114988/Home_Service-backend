@@ -43,7 +43,8 @@ public class FirebaseUtil {
         FirebaseResDto firebaseResponse = objectMapper.readValue(response.getBody(), FirebaseResDto.class);
 
         if(Objects.equals(firebaseResponse.getData().getStatus(), "error")){
-            throw new RuntimeException(firebaseResponse.getData().getMessage());
+            System.out.println(firebaseResponse.getData().getMessage());
+//            throw new RuntimeException(firebaseResponse.getData().getMessage());
         }
     }
 }

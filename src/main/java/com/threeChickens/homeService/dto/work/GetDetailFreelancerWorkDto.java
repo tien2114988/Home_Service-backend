@@ -25,4 +25,5 @@ public class GetDetailFreelancerWorkDto {
     private GetWorkDto work;
     private GetTestResultDto testResult;
     private Set<GetRateDto> rates;
+    private Set<GetImageDto> images;
 }

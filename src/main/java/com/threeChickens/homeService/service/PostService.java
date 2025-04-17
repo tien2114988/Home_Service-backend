@@ -140,6 +140,7 @@ public class PostService {
             post.setNumOfWorkedDay(post.getNumOfWorkedDay() + 1);
             if(post.getNumOfWorkedDay() == post.getTotalWorkDay()){
                 post.setStatus(PostStatus.COMPLETED);
+                post.setPayment(true);
             }
             workSchedule.setStatus(WorkScheduleStatus.COMPLETED);
             workSchedule.setEndTime(now);
