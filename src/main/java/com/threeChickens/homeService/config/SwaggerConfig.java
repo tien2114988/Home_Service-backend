@@ -27,7 +27,8 @@ public class SwaggerConfig {
                         .title("Home Service API")
                         .description("Home Service API Documentation")
                         .version("1.0")
-                        );
+                        ).addSecurityItem(new io.swagger.v3.oas.models.security.SecurityRequirement()
+                        .addList("Bearer Authentication"));
     }
 
 }

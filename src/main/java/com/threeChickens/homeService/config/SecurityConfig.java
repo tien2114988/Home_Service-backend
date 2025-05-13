@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,7 +28,12 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.authorizeHttpRequests(req -> req.anyRequest().permitAll()).csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.authorizeHttpRequests(req ->
+                        req.requestMatchers("/api/auth/**", "/webhook/", "/", "/images/**",
+                                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"
+                                ).permitAll()
+                                .anyRequest().authenticated())
+                .csrf(AbstractHttpConfigurer::disable);
 //                .requestMatchers("**").permitAll()
                 // Public
 //                .requestMatchers(HttpMethod.GET,"**").permitAll()
@@ -64,7 +70,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder))
                 .authenticationEntryPoint(new AuthExceptionHandler()));
 
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults());
 
         return httpSecurity.build();
     }

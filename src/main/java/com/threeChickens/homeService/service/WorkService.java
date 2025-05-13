@@ -114,9 +114,7 @@ public class WorkService {
 
         if(Objects.equals(createFreelancerWorkDto.getStatus(), FreelancerWorkStatus.INITIAL.toString())){
             testResult = testService.getTestResultById(createFreelancerWorkDto.getTestResultId());
-
         }
-
 
         FreelancerWorkService freelancerWorkService =  freelancerWorkRepository.findByWorkIdAndFreelancerId(workId, freelancerId).orElse(
                 null
@@ -125,7 +123,6 @@ public class WorkService {
         try {
             if(freelancerWorkService!=null){
                 modelMapper.map(createFreelancerWorkDto, freelancerWorkService);
-                freelancerWorkService.setTestResult(testResult);
             }else{
                 freelancerWorkService = FreelancerWorkService.builder()
                         .work(work)

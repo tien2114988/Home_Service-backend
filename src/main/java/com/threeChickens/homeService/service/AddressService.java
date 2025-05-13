@@ -157,24 +157,18 @@ public class AddressService {
 
         // set default
         if(!previousDefault && currentDefault) {
-            address.setDefault(true);
             address.getUser().getAddresses().stream().filter(
-                    address1 -> !address1.isDeleted() && address1.isDefault()
+                    address1 -> !address1.isDeleted() && address1.isDefault() && !Objects.equals(address1.getId(), addressId)
             ).forEach(
                     address1 -> {
-                        address1.setDefault(true);
+                        address1.setDefault(false);
                         addressRepository.save(address1);
                     }
             );
+            address.setDefault(true);
         }else{
             address.setDefault(previousDefault);
         }
-
-        // set ward
-//        if(updateAddressDto.getWardCode()!=null) {
-//            Ward ward = findWardByCode(updateAddressDto.getProvinceCode(), updateAddressDto.getDistrictCode(), updateAddressDto.getWardCode());
-//            address.setWard(ward);
-//        }
 
         address = addressRepository.save(address);
         return modelMapper.map(address, GetAddressDto.class);
